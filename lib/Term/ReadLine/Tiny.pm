@@ -66,6 +66,7 @@ sub new
 	$out = \*STDOUT unless defined($out);
 	$self->{OUT} = $out;
 
+	$self->{readmode} = '';
 	$self->{history} = [];
 
 	$self->{features} = {};
@@ -76,6 +77,16 @@ sub new
 	$self->{features}->{changehistory} = 1;
 
 	return $self;
+}
+
+sub DESTROY
+{
+	my $self = shift;
+	if ($self->{readmode})
+	{
+		Term::ReadKey::ReadMode('restore', $self->{IN});
+		$self->{readmode} = '';
+	}
 }
 
 sub readline
@@ -94,33 +105,10 @@ sub readline
 	}
 	local $\ = undef;
 
-	my $result;
-	my $old_sigint = $SIG{INT};
-	local $SIG{INT} = sub {
-		Term::ReadKey::ReadMode('restore', $in);
-		if (defined($old_sigint))
-		{
-			$old_sigint->();
-		} else
-		{
-			print "\n";
-			exit 130;
-		}
-	};
-	my $old_sigterm = $SIG{TERM};
-	local $SIG{TERM} = sub {
-		Term::ReadKey::ReadMode('restore', $in);
-		if (defined($old_sigterm))
-		{
-			$old_sigterm->();
-		} else
-		{
-			print "\n";
-			exit 143;
-		}
-	};
-	Term::ReadKey::ReadMode('cbreak', $in);
+	$self->{readmode} = 'cbreak';
+	Term::ReadKey::ReadMode($self->{readmode}, $self->{IN});
 
+	my $result;
 	my @line;
 	my ($line, $index) = ("", 0);
 	my $history_index;
@@ -384,7 +372,9 @@ sub readline
 			$esc = undef;
 		}
 	}
-	Term::ReadKey::ReadMode('restore', $in);
+
+	Term::ReadKey::ReadMode('restore', $self->{IN});
+	$self->{readmode} = '';
 	return $result;
 }
 
