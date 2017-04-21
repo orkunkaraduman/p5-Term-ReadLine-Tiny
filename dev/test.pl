@@ -25,11 +25,12 @@ use lib "${FindBin::Bin}/../lib";
 use Term::ReadLine::Tiny;
 
 
+my @a, my @b;
 my $term = Term::ReadLine::Tiny->new();
 $term->MinLine(0);
-while ( defined ($_ = $term->readline("prompt: ")) )
+while ( defined ($_ = $term->readline("", "")) )
 {
-	say $_;
+	say "$_\n".length($_);
 }
 
 

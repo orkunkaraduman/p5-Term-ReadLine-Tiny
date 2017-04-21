@@ -114,81 +114,116 @@ sub readline
 	};
 	Term::ReadKey::ReadMode('cbreak', $in);
 
-	my ($line, $index, $history_index) = ("", 0);
+	my @line;
+	my ($line, $index) = ("", 0);
+	my $history_index;
+	my $ins_mode = 0;
 
 	my $write = sub {
-		my ($text) = @_;
+		my ($text, $ins) = @_;
 		my $s;
-		$s = "";
-		for my $c (split(/(.)/, $text))
+		my @a = @line[$index..$#line];
+		my $a = substr($line, $index);
+		@line = @line[0..$index-1];
+		$line = substr($line, 0, $index);
+		print $out "\e[J";
+		for my $c (split("", $text))
 		{
 			given ($c)
 			{
 				when (/[\x00-\x1F]/)
 				{
-					$c = "^".chr(0x40+ord($c));
+					$s = "^".chr(0x40+ord($c));
 				}
 				when ($c =~ /[\x7F]/)
 				{
-					$c = "^".chr(0x3F);
+					$s = "^".chr(0x3F);
+				}
+				default
+				{
+					$s = $c;
 				}
 			}
-			$s .= $c;
+			unless ($ins)
+			{
+				print $out $s;
+				push @line, $s;
+				$line .= $c;
+			} else
+			{
+				my $i = $index-length($line);
+				$a[$i] = $s;
+				substr($a, $i, 1) = $c;
+			}
+			$index++;
 		}
-		$text = $s;
-		substr($line, $index) = $text.substr($line, $index);
-		$index += length($text);
-		$s = substr($line, $index);
-		print $out "\e[J";
-		print $out $text;
-		print $out $s;
-		print $out "\e[D" x length($s);
+		unless ($ins)
+		{
+			$s = join("", @a);
+			print $out $s;
+			print $out "\e[D" x length($s);
+		} else
+		{
+			$s = join("", @a);
+			print $out $s;
+			print $out "\e[D" x (length($s) - length(join("", @a[0..length($text)-1])));
+		}
+		push @line, @a;
+		$line .= $a;
+	};
+	my $print = sub {
+		my ($text) = @_;
+		$write->($text, $ins_mode);
 	};
 	my $set = sub {
 		my ($text) = @_;
-		print $out "\e[D" x $index;
+		print $out "\e[D" x length(join("", @line));
 		print $out "\e[J";
-		$index = 0;
+		@line = ();
 		$line = "";
+		$index = 0;
 		$write->($text);
 	};
 	my $backspace = sub {
-		my $s;
 		return if $index <= 0;
+		my @a = @line[$index..$#line];
+		my $a = substr($line, $index);
 		$index--;
-		substr($line, $index, 1) = "";
-		$s = substr($line, $index);
-		print $out "\e[D\e[J";
-		print $out $s;
-		print $out "\e[D" x length($s);
+		print $out "\e[D" x length($line[$index]);
+		@line = @line[0..$index-1];
+		$line = substr($line, 0, $index);
+		$write->($a);
+		print $out "\e[D" x length(join("", @a));
+		$index -= scalar(@a);
 	};
 	my $delete = sub {
-		my $s;
-		substr($line, $index, 1) = "";
-		$s = substr($line, $index);
-		print $out "\e[J";
-		print $out $s;
-		print $out "\e[D" x length($s);
+		my @a = @line[$index+1..$#line];
+		my $a = substr($line, $index+1);
+		@line = @line[0..$index-1];
+		$line = substr($line, 0, $index);
+		$write->($a);
+		print $out "\e[D" x length(join("", @a));
+		$index -= scalar(@a);
 	};
 	my $home = sub {
-		print $out "\e[D" x $index;
+		print $out "\e[D" x length(join("", @line[0..$index-1]));
 		$index = 0;
 	};
 	my $end = sub {
-		my $s;
-		$s = substr($line, $index);
-		$index += length($s);
-		print $out "\e[J";
-		print $out $s;
+		my @a = @line[$index..$#line];
+		my $a = substr($line, $index);
+		@line = @line[0..$index-1];
+		$line = substr($line, 0, $index);
+		$write->($a);
 	};
 	my $left = sub {
 		return if $index <= 0;
-		print $out "\e[D";
+		print $out "\e[D" x length($line[$index-1]);
 		$index--;
 	};
 	my $right = sub {
 		return if $index >= length($line);
-		print $out substr($line, $index, 1);
+		print $out $line[$index];
 		$index++;
 	};
 	my $up = sub {
@@ -201,6 +236,18 @@ sub readline
 		return if $history_index >= $#$history;
 		$history->[$history_index] = $line if length($line) >= $minline and $changehistory;
 		$history_index++;
+		$set->($history->[$history_index]);
+	};
+	my $pageup = sub {
+		return if $history_index <= 0;
+		$history->[$history_index] = $line if length($line) >= $minline and $changehistory;
+		$history_index = 0;
+		$set->($history->[$history_index]);
+	};
+	my $pagedown = sub {
+		return if $history_index >= $#$history;
+		$history->[$history_index] = $line if length($line) >= $minline and $changehistory;
+		$history_index = $#$history;
 		$set->($history->[$history_index]);
 	};
 
@@ -236,10 +283,11 @@ sub readline
 				}
 				when (/[\x00-\x1F]|\x7F/)
 				{
+					$print->($char);
 				}
 				default
 				{
-					$write->($char);
+					$print->($char);
 				}
 			}
 			next;
@@ -283,7 +331,7 @@ sub readline
 						}
 						when (2)
 						{
-							#insert
+							$ins_mode = not $ins_mode;
 						}
 						when (3)
 						{
@@ -295,11 +343,11 @@ sub readline
 						}
 						when (5)
 						{
-							#pageup
+							$pageup->();
 						}
 						when (6)
 						{
-							#pagedown
+							$pagedown->();
 						}
 						when (7)
 						{
@@ -311,13 +359,13 @@ sub readline
 						}
 						default
 						{
-							#$write->("\e$esc");
+							#$print->("\e$esc");
 						}
 					}
 				}
 				default
 				{
-					#$write->("\e$esc");
+					#$print->("\e$esc");
 				}
 			}
 			$esc = undef;
@@ -409,6 +457,23 @@ sub changehistory
 	my ($changehistory) = @_;
 	$self->{features}->{changehistory} = $changehistory if defined($changehistory);
 	return $self->{features}->{changehistory};
+}
+
+sub history
+{
+	my $self = shift;
+	if (@_ > 0)
+	{
+		if (ref($_[0]) eq "ARRAY")
+		{
+			@{$self->{history}} = @{$_[0]};
+		} else
+		{
+			@{$self->{history}} = @_;
+		}
+	}
+	my @history = @{$self->{history}};
+	return \@history;
 }
 
 
