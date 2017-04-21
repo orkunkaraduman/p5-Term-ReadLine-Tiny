@@ -13,6 +13,12 @@ Tiny readline package
 
 	use Term::ReadLine::Tiny;
 
+	my $term = Term::ReadLine::Tiny->new();
+	while ( defined($_ = $term->readline("Prompt: ")) )
+	{
+		print "$_\n";
+	}
+
 =head1 DESCRIPTION
 
 Tiny readline package
@@ -32,7 +38,7 @@ BEGIN
 	our $VERSION     = '1.00';
 	our @ISA         = qw(Exporter);
 	our @EXPORT      = qw();
-	our @EXPORT_OK   = qw(readline);
+	our @EXPORT_OK   = qw();
 }
 
 
@@ -88,6 +94,7 @@ sub readline
 	}
 	local $\ = undef;
 
+	my $result;
 	my $old_sigint = $SIG{INT};
 	local $SIG{INT} = sub {
 		Term::ReadKey::ReadMode('restore', $in);
@@ -270,11 +277,17 @@ sub readline
 				when (/\t/)
 				{
 				}
+				when (/\x04/)
+				{
+					$result = undef;
+					last;
+				}
 				when (/\n|\r/)
 				{
 					print $out $char;
 					$history->[$#$history] = $line;
 					pop $history unless length($line) >= $minline and $autohistory;
+					$result = $line;
 					last;
 				}
 				when (/[\b]|\x7F/)
@@ -297,27 +310,27 @@ sub readline
 		{
 			given ($esc)
 			{
-				when (/^\[A/)
+				when (/^\[(A|0A)/)
 				{
 					$up->();
 				}
-				when (/^\[B/)
+				when (/^\[(B|0B)/)
 				{
 					$down->();
 				}
-				when (/^\[C/)
+				when (/^\[(C|0C)/)
 				{
 					$right->();
 				}
-				when (/^\[D/)
+				when (/^\[(D|0D)/)
 				{
 					$left->();
 				}
-				when (/^\[H/)
+				when (/^\[(H|OH)/)
 				{
 					$home->();
 				}
-				when (/^\[F/)
+				when (/^\[(F|0F)/)
 				{
 					$end->();
 				}
@@ -372,7 +385,7 @@ sub readline
 		}
 	}
 	Term::ReadKey::ReadMode('restore', $in);
-	return $line;
+	return $result;
 }
 
 sub addhistory
