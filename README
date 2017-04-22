@@ -26,7 +26,8 @@ SYNOPSIS
 DESCRIPTION
     This package is a native perls implementation of ReadLine that doesn't
     need any library such as 'Gnu ReadLine'. Also fully supports UTF-8,
-    details in UTF-8 section.
+    details in UTF-8 section
+    <https://metacpan.org/pod/Term::ReadLine::Tiny#UTF-8>.
 
 Standard Term::ReadLine Methods and Functions
   ReadLine()
@@ -39,7 +40,7 @@ Standard Term::ReadLine Methods and Functions
     can be followed by two arguments for IN and OUT filehandles. These
     arguments should be globs.
 
-    This routine may also get called via "Term::ReadLine-\"new()> if you
+    This routine may also get called via "Term::ReadLine-">new()> if you
     have $ENV{PERL_RL} set to 'Tiny'.
 
   readline([$prompt[, $default]])

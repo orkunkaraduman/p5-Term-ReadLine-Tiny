@@ -30,7 +30,7 @@ Tiny implementation of ReadLine
 =head1 DESCRIPTION
 
 This package is a native perls implementation of ReadLine that doesn't need any library such as 'Gnu ReadLine'.
-Also fully supports UTF-8, details in L<UTF-8 section|#UTF-8>.
+Also fully supports UTF-8, details in L<UTF-8 section|https://metacpan.org/pod/Term::ReadLine::Tiny#UTF-8>.
 
 =cut
 use strict;
@@ -71,7 +71,7 @@ returns the handle for subsequent calls to following functions.
 Argument I<name> is the name of the application B<but not supported yet>.
 Optionally can be followed by two arguments for IN and OUT filehandles. These arguments should be globs.
 
-This routine may also get called via C<Term::ReadLine-\>new()> if you have $ENV{PERL_RL} set to 'Tiny'.
+This routine may also get called via C<Term::ReadLine->>new()> if you have $ENV{PERL_RL} set to 'Tiny'.
 
 =cut
 sub new

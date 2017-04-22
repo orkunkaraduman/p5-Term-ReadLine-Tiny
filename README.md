@@ -29,7 +29,7 @@ Tiny implementation of ReadLine
 # DESCRIPTION
 
 This package is a native perls implementation of ReadLine that doesn&#39;t need any library such as &#39;Gnu ReadLine&#39;.
-Also fully supports UTF-8, details in [UTF-8 section](https://metacpan.org/pod/#UTF-8).
+Also fully supports UTF-8, details in [UTF-8 section](https://metacpan.org/pod/Term::ReadLine::Tiny#UTF-8).
 
 # Standard Term::ReadLine Methods and Functions
 
@@ -43,7 +43,7 @@ returns the handle for subsequent calls to following functions.
 Argument _name_ is the name of the application **but not supported yet**.
 Optionally can be followed by two arguments for IN and OUT filehandles. These arguments should be globs.
 
-This routine may also get called via `Term::ReadLine-\`new()&gt; if you have $ENV{PERL\_RL} set to &#39;Tiny&#39;.
+This routine may also get called via `Term::ReadLine-`&gt;new()&gt; if you have $ENV{PERL\_RL} set to &#39;Tiny&#39;.
 
 ## readline(\[$prompt\[, $default\]\])
 
