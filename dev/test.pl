@@ -22,22 +22,45 @@ use FindBin;
 use Data::Dumper;
 
 use lib "${FindBin::Bin}/../lib";
-use Term::ReadLine::Tiny;
 
 
-my $term = Term::ReadLine::Tiny->new();
-$term->newTTY(*STDIN, *STDOUT);
+my $term;
+my $s;
 
-while ( defined($_ = $term->readline("Prompt: ")) )
-{
-	print "$_\n";
-}
-print "\n";
 
-while ( defined($_ = $term->readkey(1)) )
-{
-}
-print "\n";
+	use Term::ReadLine::Tiny;
+	
+	$term = Term::ReadLine::Tiny->new();
+	binmode($term->IN, ":utf8");
+	binmode($term->OUT, ":utf8");
+	while ( defined($_ = $term->readline("Prompt: ")) )
+	{
+		print "$_\n";
+	}
+	print "\n";
+	
+	$s = "";
+	while ( defined($_ = $term->readkey(1)) )
+	{
+		$s .= $_;
+	}
+	print "\n$s\n";
+
+
+	use Term::ReadLine::Tiny::readline;
+	
+	while ( defined($_ = readline("Prompt: ")) )
+	{
+		print "$_\n";
+	}
+	print "\n";
+	
+	$s = "";
+	while ( defined($_ = readkey(1)) )
+	{
+		$s .= $_;
+	}
+	print "\n$s\n";
 
 
 exit 0;

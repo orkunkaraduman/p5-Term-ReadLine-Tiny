@@ -1,7 +1,7 @@
 package Term::ReadLine::Tiny;
 =head1 NAME
 
-Term::ReadLine::Tiny - Tiny readline package
+Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 =head1 VERSION
 
@@ -9,26 +9,28 @@ version 1.00
 
 =head1 SYNOPSIS
 
-Tiny readline package
+Tiny implementation of ReadLine
 
 	use Term::ReadLine::Tiny;
 	
-	my $term = Term::ReadLine::Tiny->new();
-	
+	$term = Term::ReadLine::Tiny->new();
 	while ( defined($_ = $term->readline("Prompt: ")) )
 	{
 		print "$_\n";
 	}
 	print "\n";
 	
+	$s = "";
 	while ( defined($_ = $term->readkey(1)) )
 	{
+		$s .= $_;
 	}
-	print "\n";
+	print "\n$s\n";
 
 =head1 DESCRIPTION
 
-Tiny readline package
+This package is a native perls implementation of ReadLine that doesn't need any library such as 'Gnu ReadLine'.
+Also fully supports UTF-8, details in I<UTF-8 section|#UTF-8>.
 
 =cut
 use strict;
@@ -487,7 +489,7 @@ sub Features
 	return \%features;
 }
 
-=head1 Additional Supported Methods and Functions
+=head1 Additional Methods and Functions
 
 =cut
 =head2 newTTY([$IN[, $OUT]])
@@ -618,7 +620,7 @@ sub history
 
 =head2 encode_controlchar($c)
 
-encodes if argument C<c> is control character, otherwise returns argument C<c>.
+encodes if argument C<c> is a control character, otherwise returns argument C<c>.
 
 =cut
 sub encode_controlchar
@@ -647,6 +649,29 @@ sub encode_controlchar
 
 1;
 __END__
+=head1 UTF-8
+
+C<Term::ReadLine::Tiny> fully supports UTF-8.
+
+	$term = Term::ReadLine::Tiny->new();
+	binmode($term->IN, ":utf8");
+	binmode($term->OUT, ":utf8");
+	while ( defined($_ = $term->readline("Prompt: ")) )
+	{
+		print "$_\n";
+	}
+	print "\n";
+
+=head1 SEE ALSO
+
+=over
+
+=item *
+
+L<Term::ReadLine::Tiny::readline|https://metacpan.org/pod/Term::ReadLine::Tiny::readline> - A non-OO package of Term::ReadLine::Tiny
+
+=back
+
 =head1 INSTALLATION
 
 To install this module type the following

@@ -14,7 +14,7 @@ WriteMakefile(
 	EXE_FILES			=> [qw(
 	)],
 	AUTHOR				=> 'Orkun Karaduman <orkunkaraduman@gmail.com>',
-	ABSTRACT			=> 'Tiny readline package',
+	ABSTRACT			=> 'Tiny implementation of ReadLine',
 	LICENSE				=> 'gpl_3',
 	META_MERGE			=> {
 		'meta-spec'		=> {
