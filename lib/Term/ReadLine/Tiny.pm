@@ -71,7 +71,7 @@ returns the handle for subsequent calls to following functions.
 Argument I<name> is the name of the application B<but not supported yet>.
 Optionally can be followed by two arguments for IN and OUT filehandles. These arguments should be globs.
 
-This routine may also get called via C<Term::ReadLine->>new()> if you have $ENV{PERL_RL} set to 'Tiny'.
+This routine may also get called via C<Term::ReadLine-E<gt>new()> if you have $ENV{PERL_RL} set to 'Tiny'.
 
 =cut
 sub new

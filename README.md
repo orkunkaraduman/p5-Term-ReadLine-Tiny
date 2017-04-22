@@ -43,7 +43,7 @@ returns the handle for subsequent calls to following functions.
 Argument _name_ is the name of the application **but not supported yet**.
 Optionally can be followed by two arguments for IN and OUT filehandles. These arguments should be globs.
 
-This routine may also get called via `Term::ReadLine-`&gt;new()&gt; if you have $ENV{PERL\_RL} set to &#39;Tiny&#39;.
+This routine may also get called via `Term::ReadLine->new()` if you have $ENV{PERL\_RL} set to &#39;Tiny&#39;.
 
 ## readline(\[$prompt\[, $default\]\])
 

@@ -40,8 +40,8 @@ Standard Term::ReadLine Methods and Functions
     can be followed by two arguments for IN and OUT filehandles. These
     arguments should be globs.
 
-    This routine may also get called via "Term::ReadLine-">new()> if you
-    have $ENV{PERL_RL} set to 'Tiny'.
+    This routine may also get called via "Term::ReadLine->new()" if you have
+    $ENV{PERL_RL} set to 'Tiny'.
 
   readline([$prompt[, $default]])
     interactively gets an input line. Trailing newline is removed. Returns
