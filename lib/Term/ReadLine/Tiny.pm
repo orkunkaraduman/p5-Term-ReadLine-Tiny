@@ -30,7 +30,7 @@ Tiny implementation of ReadLine
 =head1 DESCRIPTION
 
 This package is a native perls implementation of ReadLine that doesn't need any library such as 'Gnu ReadLine'.
-Also fully supports UTF-8, details in I<UTF-8 section|#UTF-8>.
+Also fully supports UTF-8, details in L<UTF-8 section|#UTF-8>.
 
 =cut
 use strict;
@@ -71,7 +71,7 @@ returns the handle for subsequent calls to following functions.
 Argument I<name> is the name of the application B<but not supported yet>.
 Optionally can be followed by two arguments for IN and OUT filehandles. These arguments should be globs.
 
-This routine may also get called via C<Term::ReadLine->new()> if you have $ENV{PERL_RL} set to 'Tiny'.
+This routine may also get called via C<Term::ReadLine-\>new()> if you have $ENV{PERL_RL} set to 'Tiny'.
 
 =cut
 sub new
@@ -577,9 +577,19 @@ sub readkey
 	return $result;
 }
 
+=head2 minline([$minline])
+
+synonym of C<MinLine>.
+
+=cut
+sub minline
+{
+	return MinLine(@_);
+}
+
 =head2 changehistory([$changehistory])
 
-If argument is specified, it allows to change old history lines by argument value. Returns the old value.
+If argument is specified, it allows to change history lines when argument value is true. Returns the old value.
 
 =cut
 sub changehistory
@@ -593,12 +603,13 @@ sub changehistory
 
 =head2 history([$history])
 
-If argument is specified ArrayRef, rewrites all history by argument elements.
+If argument is specified and ArrayRef, rewrites all history by argument elements.
 
 B<history([$line1[, $line2[, ...]]])>
 
 If first argument is not ArrayRef, rewrites all history by argument values.
-Returns copy of history in ArrayRef.
+
+Always returns copy of history in ArrayRef.
 
 =cut
 sub history
