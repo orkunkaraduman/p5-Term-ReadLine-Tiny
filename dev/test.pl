@@ -26,9 +26,16 @@ use Term::ReadLine::Tiny;
 
 
 my $term = Term::ReadLine::Tiny->new();
+$term->newTTY(*STDIN, *STDOUT);
+
 while ( defined($_ = $term->readline("Prompt: ")) )
 {
 	print "$_\n";
+}
+print "\n";
+
+while ( defined($_ = $term->readkey(1)) )
+{
 }
 print "\n";
 

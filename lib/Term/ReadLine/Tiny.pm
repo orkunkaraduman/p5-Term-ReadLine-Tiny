@@ -12,12 +12,19 @@ version 1.00
 Tiny readline package
 
 	use Term::ReadLine::Tiny;
-
+	
 	my $term = Term::ReadLine::Tiny->new();
+	
 	while ( defined($_ = $term->readline("Prompt: ")) )
 	{
 		print "$_\n";
 	}
+	print "\n";
+	
+	while ( defined($_ = $term->readkey(1)) )
+	{
+	}
+	print "\n";
 
 =head1 DESCRIPTION
 
@@ -29,6 +36,7 @@ use warnings;
 use v5.10.1;
 use feature qw(switch);
 no if ($] >= 5.018), 'warnings' => 'experimental';
+require Term::ReadLine;
 require Term::ReadKey;
 
 
@@ -42,38 +50,45 @@ BEGIN
 }
 
 
+=head1 Standard Term::ReadLine Methods and Functions
+
+=cut
+=head2 ReadLine()
+
+returns the actual package that executes the commands. If this package is used, the value is C<Term::ReadLine::Tiny>.
+
+=cut
 sub ReadLine
 {
 	return __PACKAGE__;
 }
 
+=head2 new([$name[, IN[, OUT]]])
+
+returns the handle for subsequent calls to following functions.
+Argument I<name> is the name of the application B<but not supported yet>.
+Optionally can be followed by two arguments for IN and OUT filehandles. These arguments should be globs.
+
+This routine may also get called via C<Term::ReadLine->new()> if you have $ENV{PERL_RL} set to 'Tiny'.
+
+=cut
 sub new
 {
 	my $class = shift;
-	my ($appname, $IN, $OUT) = @_;
+	my ($name, $IN, $OUT) = @_;
 	my $self = {};
 	bless $self, $class;
 
-	my ($console, $consoleOUT) = findConsole();
-	my $in = $IN if ref($IN) eq "GLOB";
-	$in = \$IN if ref(\$IN) eq "GLOB";
-	open($in, '<', $console) unless defined($in);
-	$in = \*STDIN unless defined($in);
-	$self->{IN} = $in;
-	my $out = $OUT if ref($OUT) eq "GLOB";
-	$out = \$OUT if ref(\$OUT) eq "GLOB";
-	open($out, '>', $consoleOUT) unless defined($out);
-	$out = \*STDOUT unless defined($out);
-	$self->{OUT} = $out;
+	$self->newTTY($IN, $OUT);
 
 	$self->{readmode} = '';
 	$self->{history} = [];
 
 	$self->{features} = {};
-	#$self->{features}->{appname} = $appname if defined($appname);
+	#$self->{features}->{appname} = $name if defined($name);
 	$self->{features}->{addhistory} = 1;
-	$self->{features}->{minline} = 1;
 	$self->{features}->{autohistory} = 1;
+	$self->{features}->{minline} = 1;
 	$self->{features}->{changehistory} = 1;
 
 	return $self;
@@ -89,14 +104,19 @@ sub DESTROY
 	}
 }
 
+=head2 readline([$prompt[, $default]])
+
+interactively gets an input line. Trailing newline is removed. Returns C<undef> on C<EOF>.
+
+=cut
 sub readline
 {
 	my $self = shift;
 	my ($prompt, $default) = @_;
 	$prompt = "" unless defined($prompt);
 	$default = "" unless defined($default);
-	my ($in, $out, $history, $minline, $autohistory, $changehistory) = 
-		($self->{IN}, $self->{OUT}, $self->{history}, $self->{features}->{minline}, $self->{features}->{autohistory}, $self->{features}->{changehistory});
+	my ($in, $out, $history, $minline, $changehistory) = 
+		($self->{IN}, $self->{OUT}, $self->{history}, $self->{features}->{minline}, $self->{features}->{changehistory});
 	unless (-t $in)
 	{
 		my $line = <$in>;
@@ -108,7 +128,6 @@ sub readline
 	$self->{readmode} = 'cbreak';
 	Term::ReadKey::ReadMode($self->{readmode}, $self->{IN});
 
-	my $result;
 	my @line;
 	my ($line, $index) = ("", 0);
 	my $history_index;
@@ -124,21 +143,7 @@ sub readline
 		print $out "\e[J";
 		for my $c (split("", $text))
 		{
-			given ($c)
-			{
-				when (/[\x00-\x1F]/)
-				{
-					$s = "^".chr(0x40+ord($c));
-				}
-				when ($c =~ /[\x7F]/)
-				{
-					$s = "^".chr(0x3F);
-				}
-				default
-				{
-					$s = $c;
-				}
-			}
+			$s = encode_controlchar($c);
 			unless ($ins)
 			{
 				print $out $s;
@@ -172,7 +177,7 @@ sub readline
 	};
 	my $set = sub {
 		my ($text) = @_;
-		print $out "\e[D" x length(join("", @line));
+		print $out "\e[D" x length(join("", @line[0..$index-1]));
 		print $out "\e[J";
 		@line = ();
 		$line = "";
@@ -223,25 +228,25 @@ sub readline
 	};
 	my $up = sub {
 		return if $history_index <= 0;
-		$history->[$history_index] = $line if length($line) >= $minline and $changehistory;
+		$history->[$history_index] = $line if $changehistory;
 		$history_index--;
 		$set->($history->[$history_index]);
 	};
 	my $down = sub {
 		return if $history_index >= $#$history;
-		$history->[$history_index] = $line if length($line) >= $minline and $changehistory;
+		$history->[$history_index] = $line if $changehistory;
 		$history_index++;
 		$set->($history->[$history_index]);
 	};
 	my $pageup = sub {
 		return if $history_index <= 0;
-		$history->[$history_index] = $line if length($line) >= $minline and $changehistory;
+		$history->[$history_index] = $line if $changehistory;
 		$history_index = 0;
 		$set->($history->[$history_index]);
 	};
 	my $pagedown = sub {
 		return if $history_index >= $#$history;
-		$history->[$history_index] = $line if length($line) >= $minline and $changehistory;
+		$history->[$history_index] = $line if $changehistory;
 		$history_index = $#$history;
 		$set->($history->[$history_index]);
 	};
@@ -251,6 +256,7 @@ sub readline
 	push @$history, $line;
 	$history_index = $#$history;
 
+	my $result;
 	my ($char, $esc) = ("", undef);
 	while (defined($char = getc($in)))
 	{
@@ -262,9 +268,6 @@ sub readline
 				{
 					$esc = "";
 				}
-				when (/\t/)
-				{
-				}
 				when (/\x04/)
 				{
 					$result = undef;
@@ -274,7 +277,7 @@ sub readline
 				{
 					print $out $char;
 					$history->[$#$history] = $line;
-					pop $history unless length($line) >= $minline and $autohistory;
+					pop $history unless defined($minline) and length($line) >= $minline;
 					$result = $line;
 					last;
 				}
@@ -378,6 +381,11 @@ sub readline
 	return $result;
 }
 
+=head2 addhistory($line1[, $line2[, ...]])
+
+adds lines to the history of input.
+
+=cut
 sub addhistory
 {
 	my $self = shift;
@@ -385,60 +393,93 @@ sub addhistory
 	return (@_);
 }
 
+=head2 IN()
+
+returns the filehandle for input.
+
+=cut
 sub IN
 {
 	my $self = shift;
 	return $self->{IN};
 }
 
+=head2 OUT()
+
+returns the filehandle for output.
+
+=cut
 sub OUT
 {
 	my $self = shift;
 	return $self->{OUT};
 }
 
+=head2 MinLine([$minline])
+
+If argument is specified, it is an advice on minimal size of line to be included into history.
+C<undef> means do not include anything into history. Returns the old value.
+
+=cut
 sub MinLine
 {
 	my $self = shift;
 	my ($minline) = @_;
-	$self->{features}->{minline} = $minline if defined($minline);
-	return $self->{features}->{minline};
+	my $result = $self->{features}->{minline};
+	$self->{features}->{minline} = $minline if @_ >= 1;
+	return $result;
 }
 
+=head2 findConsole()
+
+returns an array with two strings that give most appropriate names for files for input and output using conventions C<"<$in">, C<">out">.
+
+=cut
 sub findConsole
 {
-	my ($console, $consoleOUT);
- 
-	if (-e "/dev/tty" and $^O ne 'MSWin32') {
-		$console = "/dev/tty";
-	} elsif (-e "con" or $^O eq 'MSWin32' or $^O eq 'msys') {
-	   $console = 'CONIN$';
-	   $consoleOUT = 'CONOUT$';
-	} elsif ($^O eq 'VMS') {
-		$console = "sys\$command";
-	} elsif ($^O eq 'os2' && !$DB::emacs) {
-		$console = "/dev/con";
-	} else {
-		$console = undef;
-	}
- 
-	$consoleOUT = $console unless defined $consoleOUT;
-	$console = "&STDIN" unless defined $console;
-	if ($console eq "/dev/tty" && !open(my $fh, "<", $console)) {
-	  $console = "&STDIN";
-	  undef($consoleOUT);
-	}
-	if (!defined $consoleOUT) {
-	  $consoleOUT = defined fileno(STDERR) && $^O ne 'MSWin32' ? "&STDERR" : "&STDOUT";
-	}
-	return ($console, $consoleOUT);
+	return (Term::ReadLine::Stub::findConsole(@_));
 }
 
+=head2 Attribs()
+
+returns a reference to a hash which describes internal configuration of the package. B<Not supported in this package.>
+
+=cut
 sub Attribs
 {
 	return {};
 }
 
+=head2 Features()
+
+Returns a reference to a hash with keys being features present in current implementation.
+This features are present:
+
+=over
+
+=item *
+
+I<appname> is the name of the application B<but not supported yet>.
+
+=item *
+
+I<addhistory> is present, always 1.
+
+=item *
+
+I<autohistory> is present, always 1.
+
+=item *
+
+I<minline> is present, default 1. See C<MinLine> method.
+
+=item *
+
+I<changehistory> is present, default 1. See C<changehistory> method.
+
+=back
+
+=cut
 sub Features
 {
 	my $self = shift;
@@ -446,26 +487,122 @@ sub Features
 	return \%features;
 }
 
-sub autohistory
+=head1 Additional Supported Methods and Functions
+
+=cut
+=head2 newTTY([$IN[, $OUT]])
+
+takes two arguments which are input filehandle and output filehandle. Switches to use these filehandles.
+
+=cut
+sub newTTY
 {
 	my $self = shift;
-	my ($autohistory) = @_;
-	$self->{features}->{autohistory} = $autohistory if defined($autohistory);
-	return $self->{features}->{autohistory};
+	my ($IN, $OUT) = @_;
+
+	my ($console, $consoleOUT) = findConsole();
+	my $in = $IN if ref($IN) eq "GLOB";
+	$in = \$IN if ref(\$IN) eq "GLOB";
+	open($in, '<', $console) unless defined($in);
+	$in = \*STDIN unless defined($in);
+	$self->{IN} = $in;
+	my $out = $OUT if ref($OUT) eq "GLOB";
+	$out = \$OUT if ref(\$OUT) eq "GLOB";
+	open($out, '>', $consoleOUT) unless defined($out);
+	$out = \*STDOUT unless defined($out);
+	$self->{OUT} = $out;
+
+	return ($self->{IN}, $self->{OUT});
 }
 
+=head2 readkey([$echo])
+
+reads a key from input and echoes by I<echo> argument. Returns C<undef> on C<EOF>.
+
+=cut
+sub readkey
+{
+	my $self = shift;
+	my ($echo) = @_;
+	my ($in, $out) = 
+		($self->{IN}, $self->{OUT});
+	unless (-t $in)
+	{
+		return getc($in);
+	}
+	local $\ = undef;
+
+	$self->{readmode} = 'cbreak';
+	Term::ReadKey::ReadMode($self->{readmode}, $self->{IN});
+
+	my $result;
+	my ($char, $esc) = ("", undef);
+	while (defined($char = getc($in)))
+	{
+		unless (defined($esc))
+		{
+			given ($char)
+			{
+				when (/\e/)
+				{
+					$esc = "";
+				}
+				when (/\x04/)
+				{
+					$result = undef;
+					last;
+				}
+				default
+				{
+					print $out encode_controlchar($char) if $echo;
+					$result = $char;
+					last;
+				}
+			}
+			next;
+		}
+		$esc .= $char;
+		if ($esc =~ /^.\d?\D/)
+		{
+			$result = "\e$esc";
+			$esc = undef;
+			last;
+		}
+	}
+
+	Term::ReadKey::ReadMode('restore', $self->{IN});
+	$self->{readmode} = '';
+	return $result;
+}
+
+=head2 changehistory([$changehistory])
+
+If argument is specified, it allows to change old history lines by argument value. Returns the old value.
+
+=cut
 sub changehistory
 {
 	my $self = shift;
 	my ($changehistory) = @_;
-	$self->{features}->{changehistory} = $changehistory if defined($changehistory);
-	return $self->{features}->{changehistory};
+	my $result = $self->{features}->{changehistory};
+	$self->{features}->{changehistory} = $changehistory if @_ >= 1;
+	return $result;
 }
 
+=head2 history([$history])
+
+If argument is specified ArrayRef, rewrites all history by argument elements.
+
+B<history([$line1[, $line2[, ...]]])>
+
+If first argument is not ArrayRef, rewrites all history by argument values.
+Returns copy of history in ArrayRef.
+
+=cut
 sub history
 {
 	my $self = shift;
-	if (@_ > 0)
+	if (@_ >= 1)
 	{
 		if (ref($_[0]) eq "ARRAY")
 		{
@@ -477,6 +614,34 @@ sub history
 	}
 	my @history = @{$self->{history}};
 	return \@history;
+}
+
+=head2 encode_controlchar($c)
+
+encodes if argument C<c> is control character, otherwise returns argument C<c>.
+
+=cut
+sub encode_controlchar
+{
+	my ($c) = @_;
+	$c = substr($c, 0, 1);
+	my $s;
+	given ($c)
+	{
+		when (/[\x00-\x1F]/)
+		{
+			$s = "^".chr(0x40+ord($c));
+		}
+		when ($c =~ /[\x7F]/)
+		{
+			$s = "^".chr(0x3F);
+		}
+		default
+		{
+			$s = $c;
+		}
+	}
+	return $s;
 }
 
 
@@ -500,6 +665,10 @@ from CPAN
 This module requires these other modules and libraries:
 
 =over
+
+=item *
+
+Term::ReadLine
 
 =item *
 
