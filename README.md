@@ -133,6 +133,7 @@ encodes if argument `c` is a control character, otherwise returns argument `c`.
 # SEE ALSO
 
 - [Term::ReadLine::Tiny::readline](https://metacpan.org/pod/Term::ReadLine::Tiny::readline) - A non-OO package of Term::ReadLine::Tiny
+- [Term::ReadLine](https://metacpan.org/pod/Term::ReadLine) - Perl interface to various readline packages
 
 # INSTALLATION
 

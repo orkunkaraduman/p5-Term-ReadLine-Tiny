@@ -681,6 +681,10 @@ C<Term::ReadLine::Tiny> fully supports UTF-8.
 
 L<Term::ReadLine::Tiny::readline|https://metacpan.org/pod/Term::ReadLine::Tiny::readline> - A non-OO package of Term::ReadLine::Tiny
 
+=item *
+
+L<Term::ReadLine|https://metacpan.org/pod/Term::ReadLine> - Perl interface to various readline packages
+
 =back
 
 =head1 INSTALLATION

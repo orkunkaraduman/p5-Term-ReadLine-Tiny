@@ -131,6 +131,9 @@ SEE ALSO
         <https://metacpan.org/pod/Term::ReadLine::Tiny::readline> - A non-OO
         package of Term::ReadLine::Tiny
 
+    *   Term::ReadLine <https://metacpan.org/pod/Term::ReadLine> - Perl
+        interface to various readline packages
+
 INSTALLATION
     To install this module type the following
 
