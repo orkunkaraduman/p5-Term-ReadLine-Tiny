@@ -5,7 +5,7 @@ Term::ReadLine::Tiny::readline - A non-OO package of Term::ReadLine::Tiny
 
 =head1 VERSION
 
-version 1.00
+version 1.01
 
 =head1 SYNOPSIS
 
@@ -36,7 +36,7 @@ use Term::ReadLine::Tiny;
 BEGIN
 {
 	require Exporter;
-	our $VERSION     = '1.00';
+	our $VERSION     = '1.01';
 	our @ISA         = qw(Exporter);
 	our @EXPORT      = qw(readline readkey);
 	our @EXPORT_OK   = qw();
