@@ -82,6 +82,7 @@ __END__
 L<Term::ReadLine::Tiny|https://metacpan.org/pod/Term::ReadLine::Tiny> - Tiny implementation of ReadLine
 
 =back
+
 =head1 REPOSITORY
 
 B<GitHub> L<https://github.com/orkunkaraduman/p5-Term-ReadLine-Tiny>
