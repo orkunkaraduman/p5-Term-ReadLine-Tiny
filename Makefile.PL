@@ -8,12 +8,13 @@ WriteMakefile(
 	VERSION_FROM		=> 'lib/Term/ReadLine/Tiny.pm',
 	MIN_PERL_VERSION	=> '5.010001',
 	PREREQ_PM			=> {
+		'Term::ReadLine'	=> '1.07',
 		'Term::ReadKey'	=> '2.33',
 	},
 	EXE_FILES			=> [qw(
 	)],
 	AUTHOR				=> 'Orkun Karaduman <orkunkaraduman@gmail.com>',
-	ABSTRACT			=> 'Tiny readline package',
+	ABSTRACT			=> 'Tiny implementation of ReadLine',
 	LICENSE				=> 'gpl_3',
 	META_MERGE			=> {
 		'meta-spec'		=> {
