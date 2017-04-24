@@ -524,7 +524,7 @@ sub newTTY
 
 =head2 readkey([$echo])
 
-reads a key from input and echoes by I<echo> argument.
+reads a key from input and echoes if I<echo> argument is C<TRUE>.
 
 Returns C<undef> on C<EOF>.
 
