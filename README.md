@@ -4,7 +4,7 @@ Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 # VERSION
 
-version 1.00
+version 1.01
 
 # SYNOPSIS
 
@@ -31,23 +31,25 @@ Tiny implementation of ReadLine
 This package is a native perls implementation of ReadLine that doesn&#39;t need any library such as &#39;Gnu ReadLine&#39;.
 Also fully supports UTF-8, details in [UTF-8 section](https://metacpan.org/pod/Term::ReadLine::Tiny#UTF-8).
 
-# Standard Term::ReadLine Methods and Functions
+# Standard Methods and Functions
 
 ## ReadLine()
 
 returns the actual package that executes the commands. If this package is used, the value is `Term::ReadLine::Tiny`.
 
-## new(\[$name\[, IN\[, OUT\]\]\])
+## new(\[$appname\[, IN\[, OUT\]\]\])
 
 returns the handle for subsequent calls to following functions.
-Argument _name_ is the name of the application **but not supported yet**.
+Argument _appname_ is the name of the application **but not supported yet**.
 Optionally can be followed by two arguments for IN and OUT filehandles. These arguments should be globs.
 
 This routine may also get called via `Term::ReadLine->new()` if you have $ENV{PERL\_RL} set to &#39;Tiny&#39;.
 
 ## readline(\[$prompt\[, $default\]\])
 
-interactively gets an input line. Trailing newline is removed. Returns `undef` on `EOF`.
+interactively gets an input line. Trailing newline is removed.
+
+Returns `undef` on `EOF`.
 
 ## addhistory($line1\[, $line2\[, ...\]\])
 
@@ -64,7 +66,9 @@ returns the filehandle for output.
 ## MinLine(\[$minline\])
 
 If argument is specified, it is an advice on minimal size of line to be included into history.
-`undef` means do not include anything into history. Returns the old value.
+`undef` means do not include anything into history (autohistory off).
+
+Returns the old value.
 
 ## findConsole()
 
@@ -79,11 +83,11 @@ returns a reference to a hash which describes internal configuration of the pack
 Returns a reference to a hash with keys being features present in current implementation.
 This features are present:
 
-- _appname_ is the name of the application **but not supported yet**.
+- _appname_ is not present and is the name of the application. **But not supported yet.**
 - _addhistory_ is present, always 1.
-- _autohistory_ is present, always 1.
 - _minline_ is present, default 1. See `MinLine` method.
-- _changehistory_ is present, default 1. See `changehistory` method.
+- _autohistory_ is present, `FALSE` if minline is `undef`. See `MinLine` method.
+- _changehistory_ is present, default `TRUE`. See `changehistory` method.
 
 # Additional Methods and Functions
 
@@ -93,7 +97,9 @@ takes two arguments which are input filehandle and output filehandle. Switches t
 
 ## readkey(\[$echo\])
 
-reads a key from input and echoes by _echo_ argument. Returns `undef` on `EOF`.
+reads a key from input and echoes by _echo_ argument.
+
+Returns `undef` on `EOF`.
 
 ## minline(\[$minline\])
 
@@ -101,7 +107,9 @@ synonym of `MinLine`.
 
 ## changehistory(\[$changehistory\])
 
-If argument is specified, it allows to change history lines when argument value is true. Returns the old value.
+If argument is specified, it allows to change history lines when argument value is true.
+
+Returns the old value.
 
 ## history(\[$history\])
 
@@ -111,7 +119,7 @@ If argument is specified and ArrayRef, rewrites all history by argument elements
 
 If first argument is not ArrayRef, rewrites all history by argument values.
 
-Always returns copy of history in ArrayRef.
+Returns copy of the old history in ArrayRef.
 
 ## encode\_controlchar($c)
 

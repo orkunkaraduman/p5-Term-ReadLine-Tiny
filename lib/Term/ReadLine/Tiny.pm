@@ -5,7 +5,7 @@ Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 =head1 VERSION
 
-version 1.00
+version 1.01
 
 =head1 SYNOPSIS
 
@@ -45,14 +45,14 @@ require Term::ReadKey;
 BEGIN
 {
 	require Exporter;
-	our $VERSION     = '1.00';
+	our $VERSION     = '1.01';
 	our @ISA         = qw(Exporter);
 	our @EXPORT      = qw();
 	our @EXPORT_OK   = qw();
 }
 
 
-=head1 Standard Term::ReadLine Methods and Functions
+=head1 Standard Methods and Functions
 
 =cut
 =head2 ReadLine()
@@ -65,10 +65,10 @@ sub ReadLine
 	return __PACKAGE__;
 }
 
-=head2 new([$name[, IN[, OUT]]])
+=head2 new([$appname[, IN[, OUT]]])
 
 returns the handle for subsequent calls to following functions.
-Argument I<name> is the name of the application B<but not supported yet>.
+Argument I<appname> is the name of the application B<but not supported yet>.
 Optionally can be followed by two arguments for IN and OUT filehandles. These arguments should be globs.
 
 This routine may also get called via C<Term::ReadLine-E<gt>new()> if you have $ENV{PERL_RL} set to 'Tiny'.
@@ -77,7 +77,7 @@ This routine may also get called via C<Term::ReadLine-E<gt>new()> if you have $E
 sub new
 {
 	my $class = shift;
-	my ($name, $IN, $OUT) = @_;
+	my ($appname, $IN, $OUT) = @_;
 	my $self = {};
 	bless $self, $class;
 
@@ -87,10 +87,10 @@ sub new
 	$self->{history} = [];
 
 	$self->{features} = {};
-	#$self->{features}->{appname} = $name if defined($name);
+	#$self->{features}->{appname} = $appname;
 	$self->{features}->{addhistory} = 1;
-	$self->{features}->{autohistory} = 1;
 	$self->{features}->{minline} = 1;
+	$self->{features}->{autohistory} = 1;
 	$self->{features}->{changehistory} = 1;
 
 	return $self;
@@ -108,7 +108,9 @@ sub DESTROY
 
 =head2 readline([$prompt[, $default]])
 
-interactively gets an input line. Trailing newline is removed. Returns C<undef> on C<EOF>.
+interactively gets an input line. Trailing newline is removed.
+
+Returns C<undef> on C<EOF>.
 
 =cut
 sub readline
@@ -420,7 +422,9 @@ sub OUT
 =head2 MinLine([$minline])
 
 If argument is specified, it is an advice on minimal size of line to be included into history.
-C<undef> means do not include anything into history. Returns the old value.
+C<undef> means do not include anything into history (autohistory off).
+
+Returns the old value.
 
 =cut
 sub MinLine
@@ -429,6 +433,7 @@ sub MinLine
 	my ($minline) = @_;
 	my $result = $self->{features}->{minline};
 	$self->{features}->{minline} = $minline if @_ >= 1;
+	$self->{features}->{autohistory} = defined($self->{features}->{minline});
 	return $result;
 }
 
@@ -461,7 +466,7 @@ This features are present:
 
 =item *
 
-I<appname> is the name of the application B<but not supported yet>.
+I<appname> is not present and is the name of the application. B<But not supported yet.>
 
 =item *
 
@@ -469,15 +474,15 @@ I<addhistory> is present, always 1.
 
 =item *
 
-I<autohistory> is present, always 1.
-
-=item *
-
 I<minline> is present, default 1. See C<MinLine> method.
 
 =item *
 
-I<changehistory> is present, default 1. See C<changehistory> method.
+I<autohistory> is present, C<FALSE> if minline is C<undef>. See C<MinLine> method.
+
+=item *
+
+I<changehistory> is present, default C<TRUE>. See C<changehistory> method.
 
 =back
 
@@ -519,7 +524,9 @@ sub newTTY
 
 =head2 readkey([$echo])
 
-reads a key from input and echoes by I<echo> argument. Returns C<undef> on C<EOF>.
+reads a key from input and echoes by I<echo> argument.
+
+Returns C<undef> on C<EOF>.
 
 =cut
 sub readkey
@@ -589,7 +596,9 @@ sub minline
 
 =head2 changehistory([$changehistory])
 
-If argument is specified, it allows to change history lines when argument value is true. Returns the old value.
+If argument is specified, it allows to change history lines when argument value is true.
+
+Returns the old value.
 
 =cut
 sub changehistory
@@ -609,12 +618,13 @@ B<history([$line1[, $line2[, ...]]])>
 
 If first argument is not ArrayRef, rewrites all history by argument values.
 
-Always returns copy of history in ArrayRef.
+Returns copy of the old history in ArrayRef.
 
 =cut
 sub history
 {
 	my $self = shift;
+	my @result = @{$self->{history}};
 	if (@_ >= 1)
 	{
 		if (ref($_[0]) eq "ARRAY")
@@ -625,8 +635,7 @@ sub history
 			@{$self->{history}} = @_;
 		}
 	}
-	my @history = @{$self->{history}};
-	return \@history;
+	return \@result;
 }
 
 =head2 encode_controlchar($c)
