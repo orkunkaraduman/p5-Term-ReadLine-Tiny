@@ -2,11 +2,9 @@ NAME
     Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 VERSION
-    version 1.01
+    version 1.02
 
 SYNOPSIS
-    Tiny implementation of ReadLine
-
             use Term::ReadLine::Tiny;
         
             $term = Term::ReadLine::Tiny->new();
@@ -28,6 +26,29 @@ DESCRIPTION
     need any library such as 'Gnu ReadLine'. Also fully supports UTF-8,
     details in UTF-8 section
     <https://metacpan.org/pod/Term::ReadLine::Tiny#UTF-8>.
+
+  Keys
+    "Enter" or "^J" or "^M": Gets input line. Returns the line unless "EOF"
+    or aborting or error, otherwise undef.
+
+    "BackSpace" or "^H" or "^?": Deletes one character behind cursor.
+
+    "Delete": Deletes one character at cursor. Does nothing if no character
+    at cursor.
+
+    "UpArrow": Changes line to previous history line.
+
+    "DownArrow": Changes line to next history line.
+
+    "RightArrow": Moves cursor forward to one character.
+
+    "LeftArrow": Moves cursor back to one character.
+
+    "Home": Moves cursor to the start of the line.
+
+    "End": Moves cursor to the end of the line.
+
+    "^D": Aborts the operation. Returns "undef".
 
 Standard Methods and Functions
   ReadLine()
@@ -95,7 +116,7 @@ Additional Methods and Functions
     Switches to use these filehandles.
 
   readkey([$echo])
-    reads a key from input and echoes by *echo* argument.
+    reads a key from input and echoes if *echo* argument is "TRUE".
 
     Returns "undef" on "EOF".
 
