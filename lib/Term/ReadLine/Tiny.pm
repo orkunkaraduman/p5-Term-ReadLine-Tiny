@@ -72,7 +72,7 @@ BEGIN
 }
 
 
-=head1 Standard Methods and Functions
+=head1 Standard Term::ReadLine Methods and Functions
 
 =cut
 =head2 ReadLine()
@@ -514,7 +514,7 @@ sub Features
 	return \%features;
 }
 
-=head1 Additional Methods and Functions
+=head1 Additional Term::ReadLine Methods and Functions
 
 =cut
 =head2 newTTY([$IN[, $OUT]])
@@ -542,6 +542,9 @@ sub newTTY
 	return ($self->{IN}, $self->{OUT});
 }
 
+=head1 Other Methods and Functions
+
+=cut
 =head2 readkey([$echo])
 
 reads a key from input and echoes if I<echo> argument is C<TRUE>.

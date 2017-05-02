@@ -51,7 +51,7 @@ Also fully supports UTF-8, details in [UTF-8 section](https://metacpan.org/pod/T
 
 **`^D`:** Aborts the operation. Returns `undef`.
 
-# Standard Methods and Functions
+# Standard Term::ReadLine Methods and Functions
 
 ## ReadLine()
 
@@ -109,11 +109,13 @@ This features are present:
 - _autohistory_ is present, `FALSE` if minline is `undef`. See `MinLine` method.
 - _changehistory_ is present, default `TRUE`. See `changehistory` method.
 
-# Additional Methods and Functions
+# Additional Term::ReadLine Methods and Functions
 
 ## newTTY(\[$IN\[, $OUT\]\])
 
 takes two arguments which are input filehandle and output filehandle. Switches to use these filehandles.
+
+# Other Methods and Functions
 
 ## readkey(\[$echo\])
 
