@@ -1,3 +1,6 @@
+1.03	2017-05-02
+		- Fix for 'Bug #121293 for Term-ReadLine-Tiny: Experimental pop on scalar is now forbidden'
+
 1.02	2017-05-02
 		- POD changes
 		- Little fixes
