@@ -5,11 +5,9 @@ Term::ReadLine::Tiny::readline - A non-OO package of Term::ReadLine::Tiny
 
 =head1 VERSION
 
-version 1.01
+version 1.02
 
 =head1 SYNOPSIS
-
-A non-OO package of Term::ReadLine::Tiny
 
 	use Term::ReadLine::Tiny::readline;
 	
@@ -36,7 +34,7 @@ use Term::ReadLine::Tiny;
 BEGIN
 {
 	require Exporter;
-	our $VERSION     = '1.01';
+	our $VERSION     = '1.02';
 	our @ISA         = qw(Exporter);
 	our @EXPORT      = qw(readline readkey);
 	our @EXPORT_OK   = qw();
@@ -48,7 +46,9 @@ BEGIN
 =cut
 =head2 readline([$prompt[, $default[, IN[, OUT]]]])
 
-interactively gets an input line. Trailing newline is removed. Returns C<undef> on C<EOF>.
+interactively gets an input line. Trailing newline is removed.
+
+Returns C<undef> on C<EOF>.
 
 =cut
 sub readline
@@ -60,7 +60,9 @@ sub readline
 
 =head2 readkey([$echo[, IN[, OUT]]])
 
-reads a key from input and echoes by I<echo> argument. Returns C<undef> on C<EOF>.
+reads a key from input and echoes if I<echo> argument is C<TRUE>.
+
+Returns C<undef> on C<EOF>.
 
 =cut
 sub readkey

@@ -4,11 +4,9 @@ Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 # VERSION
 
-version 1.01
+version 1.02
 
 # SYNOPSIS
-
-Tiny implementation of ReadLine
 
         use Term::ReadLine::Tiny;
         
@@ -31,7 +29,29 @@ Tiny implementation of ReadLine
 This package is a native perls implementation of ReadLine that doesn&#39;t need any library such as &#39;Gnu ReadLine&#39;.
 Also fully supports UTF-8, details in [UTF-8 section](https://metacpan.org/pod/Term::ReadLine::Tiny#UTF-8).
 
-# Standard Methods and Functions
+## Keys
+
+**`Enter` or `^J` or `^M`:** Gets input line. Returns the line unless `EOF` or aborting or error, otherwise undef.
+
+**`BackSpace` or `^H` or `^?`:** Deletes one character behind cursor.
+
+**`Delete`:** Deletes one character at cursor. Does nothing if no character at cursor.
+
+**`UpArrow`:** Changes line to previous history line.
+
+**`DownArrow`:** Changes line to next history line.
+
+**`RightArrow`:** Moves cursor forward to one character.
+
+**`LeftArrow`:** Moves cursor back to one character.
+
+**`Home`:** Moves cursor to the start of the line.
+
+**`End`:** Moves cursor to the end of the line.
+
+**`^D`:** Aborts the operation. Returns `undef`.
+
+# Standard Term::ReadLine Methods and Functions
 
 ## ReadLine()
 
@@ -89,15 +109,17 @@ This features are present:
 - _autohistory_ is present, `FALSE` if minline is `undef`. See `MinLine` method.
 - _changehistory_ is present, default `TRUE`. See `changehistory` method.
 
-# Additional Methods and Functions
+# Additional Term::ReadLine Methods and Functions
 
 ## newTTY(\[$IN\[, $OUT\]\])
 
 takes two arguments which are input filehandle and output filehandle. Switches to use these filehandles.
 
+# Other Methods and Functions
+
 ## readkey(\[$echo\])
 
-reads a key from input and echoes by _echo_ argument.
+reads a key from input and echoes if _echo_ argument is `TRUE`.
 
 Returns `undef` on `EOF`.
 
