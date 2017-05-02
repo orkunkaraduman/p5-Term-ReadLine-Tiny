@@ -9,4 +9,3 @@ MANIFEST.SKIP
 README
 README.md
 t/00-load.t
-xt/synopsis.t
