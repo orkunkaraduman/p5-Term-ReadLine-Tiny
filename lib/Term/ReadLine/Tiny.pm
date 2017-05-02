@@ -9,8 +9,6 @@ version 1.02
 
 =head1 SYNOPSIS
 
-Tiny implementation of ReadLine
-
 	use Term::ReadLine::Tiny;
 	
 	$term = Term::ReadLine::Tiny->new();
@@ -31,6 +29,28 @@ Tiny implementation of ReadLine
 
 This package is a native perls implementation of ReadLine that doesn't need any library such as 'Gnu ReadLine'.
 Also fully supports UTF-8, details in L<UTF-8 section|https://metacpan.org/pod/Term::ReadLine::Tiny#UTF-8>.
+
+=head2 Keys
+
+B<C<Enter> or C<^J> or C<^M>:> Gets input line. Returns the line unless C<EOF> or aborting or error, otherwise undef.
+
+B<C<BackSpace> or C<^H> or C<^?>:> Deletes one character behind cursor.
+
+B<C<Delete>:> Deletes one character at cursor. Does nothing if no character at cursor.
+
+B<C<UpArrow>:> Changes line to previous history line.
+
+B<C<DownArrow>:> Changes line to next history line.
+
+B<C<RightArrow>:> Moves cursor forward to one character.
+
+B<C<LeftArrow>:> Moves cursor back to one character.
+
+B<C<Home>:> Moves cursor to the start of the line.
+
+B<C<End>:> Moves cursor to the end of the line.
+
+B<C<^D>:> Aborts the operation. Returns C<undef>.
 
 =cut
 use strict;
@@ -260,7 +280,7 @@ sub readline
 	push @$history, $line;
 	$history_index = $#$history;
 
-	my $result;
+	my $result = undef;
 	my ($char, $esc) = ("", undef);
 	while (defined($char = getc($in)))
 	{
@@ -321,7 +341,7 @@ sub readline
 				{
 					$left->();
 				}
-				when (/^\[(H|OH)/)
+				when (/^\[(H|0H)/)
 				{
 					$home->();
 				}

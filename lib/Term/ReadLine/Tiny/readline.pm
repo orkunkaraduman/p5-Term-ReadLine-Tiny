@@ -9,8 +9,6 @@ version 1.02
 
 =head1 SYNOPSIS
 
-A non-OO package of Term::ReadLine::Tiny
-
 	use Term::ReadLine::Tiny::readline;
 	
 	while ( defined($_ = readline("Prompt: ")) )
