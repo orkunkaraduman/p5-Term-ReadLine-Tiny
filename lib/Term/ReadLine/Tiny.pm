@@ -301,7 +301,7 @@ sub readline
 				{
 					print $out $char;
 					$history->[$#$history] = $line;
-					pop $history unless defined($minline) and length($line) >= $minline;
+					pop @$history unless defined($minline) and length($line) >= $minline;
 					$result = $line;
 					last;
 				}
