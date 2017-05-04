@@ -4,7 +4,7 @@ Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 # VERSION
 
-version 1.03
+version 1.04
 
 # SYNOPSIS
 
@@ -35,8 +35,6 @@ Also fully supports UTF-8, details in [UTF-8 section](https://metacpan.org/pod/T
 
 **`BackSpace` or `^H` or `^?`:** Deletes one character behind cursor.
 
-**`Delete`:** Deletes one character at cursor. Does nothing if no character at cursor.
-
 **`UpArrow`:** Changes line to previous history line.
 
 **`DownArrow`:** Changes line to next history line.
@@ -48,6 +46,14 @@ Also fully supports UTF-8, details in [UTF-8 section](https://metacpan.org/pod/T
 **`Home`:** Moves cursor to the start of the line.
 
 **`End`:** Moves cursor to the end of the line.
+
+**`PageUp`:** Change line to first line of history.
+
+**`PageDown`:** Change line to latest line of history.
+
+**`Insert`:** Switch typing mode between insert and overwrite.
+
+**`Delete`:** Deletes one character at cursor. Does nothing if no character at cursor.
 
 **`^D`:** Aborts the operation. Returns `undef`.
 
@@ -73,6 +79,8 @@ Returns `undef` on `EOF`.
 
 ## addhistory($line1\[, $line2\[, ...\]\])
 
+**AddHistory($line1\[, $line2\[, ...\]\])**
+
 adds lines to the history of input.
 
 ## IN()
@@ -84,6 +92,8 @@ returns the filehandle for input.
 returns the filehandle for output.
 
 ## MinLine(\[$minline\])
+
+**minline(\[$minline\])**
 
 If argument is specified, it is an advice on minimal size of line to be included into history.
 `undef` means do not include anything into history (autohistory off).
@@ -115,6 +125,10 @@ This features are present:
 
 takes two arguments which are input filehandle and output filehandle. Switches to use these filehandles.
 
+## ornaments
+
+This is void implementation. Ornaments is **not supported**.
+
 # Other Methods and Functions
 
 ## readkey(\[$echo\])
@@ -122,10 +136,6 @@ takes two arguments which are input filehandle and output filehandle. Switches t
 reads a key from input and echoes if _echo_ argument is `TRUE`.
 
 Returns `undef` on `EOF`.
-
-## minline(\[$minline\])
-
-synonym of `MinLine`.
 
 ## changehistory(\[$changehistory\])
 

@@ -36,8 +36,6 @@ B<C<Enter> or C<^J> or C<^M>:> Gets input line. Returns the line unless C<EOF> o
 
 B<C<BackSpace> or C<^H> or C<^?>:> Deletes one character behind cursor.
 
-B<C<Delete>:> Deletes one character at cursor. Does nothing if no character at cursor.
-
 B<C<UpArrow>:> Changes line to previous history line.
 
 B<C<DownArrow>:> Changes line to next history line.
@@ -49,6 +47,14 @@ B<C<LeftArrow>:> Moves cursor back to one character.
 B<C<Home>:> Moves cursor to the start of the line.
 
 B<C<End>:> Moves cursor to the end of the line.
+
+B<C<PageUp>:> Change line to first line of history.
+
+B<C<PageDown>:> Change line to latest line of history.
+
+B<C<Insert>:> Switch typing mode between insert and overwrite.
+
+B<C<Delete>:> Deletes one character at cursor. Does nothing if no character at cursor.
 
 B<C<^D>:> Aborts the operation. Returns C<undef>.
 
