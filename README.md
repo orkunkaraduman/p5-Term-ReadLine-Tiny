@@ -165,7 +165,8 @@ encodes if argument `c` is a control character, otherwise returns argument `c`.
 # UTF-8
 
 `Term::ReadLine::Tiny` fully supports UTF-8, opens console input/output file handles with `:utf8` layer by `LANG`
-environment variable. You should set `:utf8` layer explicitly, if input/output file handles specified.
+environment variable. You should set `:utf8` layer explicitly, if input/output file handles specified with
+`new()` or `newTTY()`.
 
         $term = Term::ReadLine::Tiny->new("", $in, $out);
         binmode($term->IN, ":utf8");
