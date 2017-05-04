@@ -110,12 +110,16 @@ Standard Methods and Functions
     *   *appname* is not present and is the name of the application. But not
         supported yet.
 
-    *   *addhistory* is present, always 1.
+    *   *addhistory* is present, always "TRUE".
 
     *   *minline* is present, default 1. See "MinLine" method.
 
     *   *autohistory* is present, "FALSE" if minline is "undef". See
         "MinLine" method.
+
+    *   *gethistory* is present, always "TRUE".
+
+    *   *sethistory* is present, always "TRUE".
 
     *   *changehistory* is present, default "TRUE". See "changehistory"
         method.
@@ -128,16 +132,17 @@ Additional Methods and Functions
   ornaments
     This is void implementation. Ornaments is not supported.
 
-  history([$history])
-    If argument is specified and ArrayRef, rewrites all history by argument
-    elements.
+  gethistory()
+    GetHistory()
 
-    history([$line1[, $line2[, ...]]])
+    Returns copy of the history in Array.
 
-    If first argument is not ArrayRef, rewrites all history by argument
-    values.
+  sethistory($line1[, $line2[, ...]])
+    SetHistory($line1[, $line2[, ...]])
 
-    Returns copy of the old history in ArrayRef.
+    rewrites all history by argument values.
+
+    Returns copy of the history in Array.
 
   changehistory([$changehistory])
     If argument is specified, it allows to change history lines when

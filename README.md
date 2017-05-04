@@ -114,9 +114,11 @@ Returns a reference to a hash with keys being features present in current implem
 This features are present:
 
 - _appname_ is not present and is the name of the application. **But not supported yet.**
-- _addhistory_ is present, always 1.
+- _addhistory_ is present, always `TRUE`.
 - _minline_ is present, default 1. See `MinLine` method.
 - _autohistory_ is present, `FALSE` if minline is `undef`. See `MinLine` method.
+- _gethistory_ is present, always `TRUE`.
+- _sethistory_ is present, always `TRUE`.
 - _changehistory_ is present, default `TRUE`. See `changehistory` method.
 
 # Additional Methods and Functions
@@ -129,15 +131,19 @@ takes two arguments which are input filehandle and output filehandle. Switches t
 
 This is void implementation. Ornaments is **not supported**.
 
-## history(\[$history\])
+## gethistory()
 
-If argument is specified and ArrayRef, rewrites all history by argument elements.
+**GetHistory()**
 
-**history(\[$line1\[, $line2\[, ...\]\]\])**
+Returns copy of the history in Array.
 
-If first argument is not ArrayRef, rewrites all history by argument values.
+## sethistory($line1\[, $line2\[, ...\]\])
 
-Returns copy of the old history in ArrayRef.
+**SetHistory($line1\[, $line2\[, ...\]\])**
+
+rewrites all history by argument values.
+
+Returns copy of the history in Array.
 
 ## changehistory(\[$changehistory\])
 
