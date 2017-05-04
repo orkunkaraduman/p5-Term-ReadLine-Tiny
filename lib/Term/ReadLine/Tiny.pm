@@ -78,9 +78,10 @@ BEGIN
 }
 
 
-=head1 Standard Term::ReadLine Methods and Functions
+=head1 Standard Methods and Functions
 
 =cut
+
 =head2 ReadLine()
 
 returns the actual package that executes the commands. If this package is used, the value is C<Term::ReadLine::Tiny>.
@@ -117,6 +118,8 @@ sub new
 	$self->{features}->{addhistory} = 1;
 	$self->{features}->{minline} = 1;
 	$self->{features}->{autohistory} = 1;
+	$self->{features}->{gethistory} = 1;
+	$self->{features}->{sethistory} = 1;
 	$self->{features}->{changehistory} = 1;
 
 	return $self;
@@ -510,7 +513,7 @@ I<appname> is not present and is the name of the application. B<But not supporte
 
 =item *
 
-I<addhistory> is present, always 1.
+I<addhistory> is present, always C<TRUE>.
 
 =item *
 
@@ -519,6 +522,14 @@ I<minline> is present, default 1. See C<MinLine> method.
 =item *
 
 I<autohistory> is present, C<FALSE> if minline is C<undef>. See C<MinLine> method.
+
+=item *
+
+I<gethistory> is present, always C<TRUE>.
+
+=item *
+
+I<sethistory> is present, always C<TRUE>.
 
 =item *
 
@@ -534,9 +545,10 @@ sub Features
 	return \%features;
 }
 
-=head1 Additional Term::ReadLine Methods and Functions
+=head1 Additional Methods and Functions
 
 =cut
+
 =head2 newTTY([$IN[, $OUT]])
 
 takes two arguments which are input filehandle and output filehandle. Switches to use these filehandles.
@@ -548,12 +560,16 @@ sub newTTY
 	my ($IN, $OUT) = @_;
 
 	my ($console, $consoleOUT) = findConsole();
-	my $in = $IN if ref($IN) eq "GLOB";
+
+	my $in;
+	$in = $IN if ref($IN) eq "GLOB";
 	$in = \$IN if ref(\$IN) eq "GLOB";
 	open($in, '<', $console) unless defined($in);
 	$in = \*STDIN unless defined($in);
 	$self->{IN} = $in;
-	my $out = $OUT if ref($OUT) eq "GLOB";
+
+	my $out;
+	$out = $OUT if ref($OUT) eq "GLOB";
 	$out = \$OUT if ref(\$OUT) eq "GLOB";
 	open($out, '>', $consoleOUT) unless defined($out);
 	$out = \*STDOUT unless defined($out);
@@ -572,9 +588,63 @@ sub ornaments
 	return;
 }
 
+=head2 gethistory()
+
+B<GetHistory()>
+
+Returns copy of the history in Array.
+
+=cut
+sub gethistory
+{
+	my $self = shift;
+	return @{$self->{history}};
+}
+sub GetHistory
+{
+	return gethistory(@_);
+}
+
+=head2 sethistory($line1[, $line2[, ...]])
+
+B<SetHistory($line1[, $line2[, ...]])>
+
+rewrites all history by argument values.
+
+Returns copy of the history in Array.
+
+=cut
+sub sethistory
+{
+	my $self = shift;
+	@{$self->{history}} = @_;
+	return 1;
+}
+sub SetHistory
+{
+	return sethistory(@_);
+}
+
+=head2 changehistory([$changehistory])
+
+If argument is specified, it allows to change history lines when argument value is true.
+
+Returns the old value.
+
+=cut
+sub changehistory
+{
+	my $self = shift;
+	my ($changehistory) = @_;
+	my $result = $self->{features}->{changehistory};
+	$self->{features}->{changehistory} = $changehistory if @_ >= 1;
+	return $result;
+}
+
 =head1 Other Methods and Functions
 
 =cut
+
 =head2 readkey([$echo])
 
 reads a key from input and echoes if I<echo> argument is C<TRUE>.
@@ -635,50 +705,6 @@ sub readkey
 	Term::ReadKey::ReadMode('restore', $self->{IN});
 	$self->{readmode} = '';
 	return $result;
-}
-
-=head2 changehistory([$changehistory])
-
-If argument is specified, it allows to change history lines when argument value is true.
-
-Returns the old value.
-
-=cut
-sub changehistory
-{
-	my $self = shift;
-	my ($changehistory) = @_;
-	my $result = $self->{features}->{changehistory};
-	$self->{features}->{changehistory} = $changehistory if @_ >= 1;
-	return $result;
-}
-
-=head2 history([$history])
-
-If argument is specified and ArrayRef, rewrites all history by argument elements.
-
-B<history([$line1[, $line2[, ...]]])>
-
-If first argument is not ArrayRef, rewrites all history by argument values.
-
-Returns copy of the old history in ArrayRef.
-
-=cut
-sub history
-{
-	my $self = shift;
-	my @result = @{$self->{history}};
-	if (@_ >= 1)
-	{
-		if (ref($_[0]) eq "ARRAY")
-		{
-			@{$self->{history}} = @{$_[0]};
-		} else
-		{
-			@{$self->{history}} = @_;
-		}
-	}
-	return \@result;
 }
 
 =head2 encode_controlchar($c)

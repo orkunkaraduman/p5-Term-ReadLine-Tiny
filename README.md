@@ -57,7 +57,7 @@ Also fully supports UTF-8, details in [UTF-8 section](https://metacpan.org/pod/T
 
 **`^D`:** Aborts the operation. Returns `undef`.
 
-# Standard Term::ReadLine Methods and Functions
+# Standard Methods and Functions
 
 ## ReadLine()
 
@@ -119,7 +119,7 @@ This features are present:
 - _autohistory_ is present, `FALSE` if minline is `undef`. See `MinLine` method.
 - _changehistory_ is present, default `TRUE`. See `changehistory` method.
 
-# Additional Term::ReadLine Methods and Functions
+# Additional Methods and Functions
 
 ## newTTY(\[$IN\[, $OUT\]\])
 
@@ -128,20 +128,6 @@ takes two arguments which are input filehandle and output filehandle. Switches t
 ## ornaments
 
 This is void implementation. Ornaments is **not supported**.
-
-# Other Methods and Functions
-
-## readkey(\[$echo\])
-
-reads a key from input and echoes if _echo_ argument is `TRUE`.
-
-Returns `undef` on `EOF`.
-
-## changehistory(\[$changehistory\])
-
-If argument is specified, it allows to change history lines when argument value is true.
-
-Returns the old value.
 
 ## history(\[$history\])
 
@@ -152,6 +138,20 @@ If argument is specified and ArrayRef, rewrites all history by argument elements
 If first argument is not ArrayRef, rewrites all history by argument values.
 
 Returns copy of the old history in ArrayRef.
+
+## changehistory(\[$changehistory\])
+
+If argument is specified, it allows to change history lines when argument value is true.
+
+Returns the old value.
+
+# Other Methods and Functions
+
+## readkey(\[$echo\])
+
+reads a key from input and echoes if _echo_ argument is `TRUE`.
+
+Returns `undef` on `EOF`.
 
 ## encode\_controlchar($c)
 
