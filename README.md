@@ -4,7 +4,7 @@ Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 # VERSION
 
-version 1.03
+version 1.04
 
 # SYNOPSIS
 
@@ -35,8 +35,6 @@ Also fully supports UTF-8, details in [UTF-8 section](https://metacpan.org/pod/T
 
 **`BackSpace` or `^H` or `^?`:** Deletes one character behind cursor.
 
-**`Delete`:** Deletes one character at cursor. Does nothing if no character at cursor.
-
 **`UpArrow`:** Changes line to previous history line.
 
 **`DownArrow`:** Changes line to next history line.
@@ -49,9 +47,17 @@ Also fully supports UTF-8, details in [UTF-8 section](https://metacpan.org/pod/T
 
 **`End`:** Moves cursor to the end of the line.
 
+**`PageUp`:** Change line to first line of history.
+
+**`PageDown`:** Change line to latest line of history.
+
+**`Insert`:** Switch typing mode between insert and overwrite.
+
+**`Delete`:** Deletes one character at cursor. Does nothing if no character at cursor.
+
 **`^D`:** Aborts the operation. Returns `undef`.
 
-# Standard Term::ReadLine Methods and Functions
+# Standard Methods and Functions
 
 ## ReadLine()
 
@@ -73,6 +79,8 @@ Returns `undef` on `EOF`.
 
 ## addhistory($line1\[, $line2\[, ...\]\])
 
+**AddHistory($line1\[, $line2\[, ...\]\])**
+
 adds lines to the history of input.
 
 ## IN()
@@ -84,6 +92,8 @@ returns the filehandle for input.
 returns the filehandle for output.
 
 ## MinLine(\[$minline\])
+
+**minline(\[$minline\])**
 
 If argument is specified, it is an advice on minimal size of line to be included into history.
 `undef` means do not include anything into history (autohistory off).
@@ -104,16 +114,41 @@ Returns a reference to a hash with keys being features present in current implem
 This features are present:
 
 - _appname_ is not present and is the name of the application. **But not supported yet.**
-- _addhistory_ is present, always 1.
+- _addhistory_ is present, always `TRUE`.
 - _minline_ is present, default 1. See `MinLine` method.
-- _autohistory_ is present, `FALSE` if minline is `undef`. See `MinLine` method.
+- _autohistory_ is present. `FALSE` if minline is `undef`. See `MinLine` method.
+- _gethistory_ is present, always `TRUE`.
+- _sethistory_ is present, always `TRUE`.
 - _changehistory_ is present, default `TRUE`. See `changehistory` method.
+- _utf8_ is present. `TRUE` if input file handle has `:utf8` layer.
 
-# Additional Term::ReadLine Methods and Functions
+# Additional Methods and Functions
 
 ## newTTY(\[$IN\[, $OUT\]\])
 
 takes two arguments which are input filehandle and output filehandle. Switches to use these filehandles.
+
+## ornaments
+
+This is void implementation. Ornaments is **not supported**.
+
+## gethistory()
+
+**GetHistory()**
+
+Returns copy of the history in Array.
+
+## sethistory($line1\[, $line2\[, ...\]\])
+
+**SetHistory($line1\[, $line2\[, ...\]\])**
+
+rewrites all history by argument values.
+
+## changehistory(\[$changehistory\])
+
+If argument is specified, it allows to change history lines when argument value is true.
+
+Returns the old value.
 
 # Other Methods and Functions
 
@@ -123,35 +158,17 @@ reads a key from input and echoes if _echo_ argument is `TRUE`.
 
 Returns `undef` on `EOF`.
 
-## minline(\[$minline\])
-
-synonym of `MinLine`.
-
-## changehistory(\[$changehistory\])
-
-If argument is specified, it allows to change history lines when argument value is true.
-
-Returns the old value.
-
-## history(\[$history\])
-
-If argument is specified and ArrayRef, rewrites all history by argument elements.
-
-**history(\[$line1\[, $line2\[, ...\]\]\])**
-
-If first argument is not ArrayRef, rewrites all history by argument values.
-
-Returns copy of the old history in ArrayRef.
-
 ## encode\_controlchar($c)
 
 encodes if argument `c` is a control character, otherwise returns argument `c`.
 
 # UTF-8
 
-`Term::ReadLine::Tiny` fully supports UTF-8.
+`Term::ReadLine::Tiny` fully supports UTF-8, opens console input/output file handles with `:utf8` layer by `LANG`
+environment variable. You should set `:utf8` layer explicitly, if input/output file handles specified with
+`new()` or `newTTY()`.
 
-        $term = Term::ReadLine::Tiny->new();
+        $term = Term::ReadLine::Tiny->new("", $in, $out);
         binmode($term->IN, ":utf8");
         binmode($term->OUT, ":utf8");
         while ( defined($_ = $term->readline("Prompt: ")) )
