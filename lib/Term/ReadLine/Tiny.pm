@@ -544,6 +544,11 @@ sub newTTY
 	return ($self->{IN}, $self->{OUT});
 }
 
+=head2 ornaments
+
+This is void implementation. Ornaments is B<not supported>.
+
+=cut
 sub ornaments
 {
 	return;
