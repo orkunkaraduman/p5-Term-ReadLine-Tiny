@@ -542,6 +542,11 @@ sub newTTY
 	return ($self->{IN}, $self->{OUT});
 }
 
+sub ornaments
+{
+	return;
+}
+
 =head1 Other Methods and Functions
 
 =cut
