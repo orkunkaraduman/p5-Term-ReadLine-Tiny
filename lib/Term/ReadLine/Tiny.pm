@@ -409,6 +409,8 @@ sub readline
 
 =head2 addhistory($line1[, $line2[, ...]])
 
+B<AddHistory($line1[, $line2[, ...]])>
+
 adds lines to the history of input.
 
 =cut
@@ -417,6 +419,10 @@ sub addhistory
 	my $self = shift;
 	push @{$self->{history}}, @_;
 	return (@_);
+}
+sub AddHistory
+{
+	return addhistory(@_);
 }
 
 =head2 IN()
@@ -443,6 +449,8 @@ sub OUT
 
 =head2 MinLine([$minline])
 
+B<minline([$minline])>
+
 If argument is specified, it is an advice on minimal size of line to be included into history.
 C<undef> means do not include anything into history (autohistory off).
 
@@ -457,6 +465,10 @@ sub MinLine
 	$self->{features}->{minline} = $minline if @_ >= 1;
 	$self->{features}->{autohistory} = defined($self->{features}->{minline});
 	return $result;
+}
+sub minline
+{
+	return MinLine(@_);
 }
 
 =head2 findConsole()
@@ -617,16 +629,6 @@ sub readkey
 	Term::ReadKey::ReadMode('restore', $self->{IN});
 	$self->{readmode} = '';
 	return $result;
-}
-
-=head2 minline([$minline])
-
-synonym of C<MinLine>.
-
-=cut
-sub minline
-{
-	return MinLine(@_);
 }
 
 =head2 changehistory([$changehistory])

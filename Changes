@@ -1,6 +1,7 @@
 1.04	2017-05-04
 		- Bug fix: Character appearance at end of terminal line
 		- Bug #121519 fix: Added void implementation of ornaments()
+		- Added AddHistory(), synonym of addhistory()
 
 1.03	2017-05-02
 		- Fix for 'Bug #121293 for Term-ReadLine-Tiny: Experimental pop on scalar is now forbidden'
