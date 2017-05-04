@@ -114,7 +114,7 @@ Standard Methods and Functions
 
     *   *minline* is present, default 1. See "MinLine" method.
 
-    *   *autohistory* is present, "FALSE" if minline is "undef". See
+    *   *autohistory* is present. "FALSE" if minline is "undef". See
         "MinLine" method.
 
     *   *gethistory* is present, always "TRUE".
@@ -123,6 +123,8 @@ Standard Methods and Functions
 
     *   *changehistory* is present, default "TRUE". See "changehistory"
         method.
+
+    *   *utf8* is present. "TRUE" if input file handle has ":utf8" layer.
 
 Additional Methods and Functions
   newTTY([$IN[, $OUT]])
@@ -141,8 +143,6 @@ Additional Methods and Functions
     SetHistory($line1[, $line2[, ...]])
 
     rewrites all history by argument values.
-
-    Returns copy of the history in Array.
 
   changehistory([$changehistory])
     If argument is specified, it allows to change history lines when

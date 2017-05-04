@@ -64,6 +64,8 @@ use warnings;
 use v5.10.1;
 use feature qw(switch);
 no if ($] >= 5.018), 'warnings' => 'experimental';
+require utf8;
+require PerlIO;
 require Term::ReadLine;
 require Term::ReadKey;
 
@@ -108,8 +110,6 @@ sub new
 	my $self = {};
 	bless $self, $class;
 
-	$self->newTTY($IN, $OUT);
-
 	$self->{readmode} = '';
 	$self->{history} = [];
 
@@ -121,6 +121,8 @@ sub new
 	$self->{features}->{gethistory} = 1;
 	$self->{features}->{sethistory} = 1;
 	$self->{features}->{changehistory} = 1;
+
+	$self->newTTY($IN, $OUT);
 
 	return $self;
 }
@@ -426,6 +428,13 @@ adds lines to the history of input.
 sub addhistory
 {
 	my $self = shift;
+	if ($self->{features}->{utf8})
+	{
+		for (my $i = 0; $i < @_; $i++)
+		{
+			utf8::decode($_[$i]);
+		}
+	}
 	push @{$self->{history}}, @_;
 	return (@_);
 }
@@ -521,7 +530,7 @@ I<minline> is present, default 1. See C<MinLine> method.
 
 =item *
 
-I<autohistory> is present, C<FALSE> if minline is C<undef>. See C<MinLine> method.
+I<autohistory> is present. C<FALSE> if minline is C<undef>. See C<MinLine> method.
 
 =item *
 
@@ -534,6 +543,10 @@ I<sethistory> is present, always C<TRUE>.
 =item *
 
 I<changehistory> is present, default C<TRUE>. See C<changehistory> method.
+
+=item *
+
+I<utf8> is present. C<TRUE> if input file handle has C<:utf8> layer.
 
 =back
 
@@ -560,20 +573,25 @@ sub newTTY
 	my ($IN, $OUT) = @_;
 
 	my ($console, $consoleOUT) = findConsole();
+	my $console_utf8 = defined($ENV{LANG}) && $ENV{LANG} =~ /\.UTF\-?8$/i;
+	my $console_layers = "";
+	$console_layers .= " :utf8" if $console_utf8;
 
 	my $in;
 	$in = $IN if ref($IN) eq "GLOB";
 	$in = \$IN if ref(\$IN) eq "GLOB";
-	open($in, '<', $console) unless defined($in);
+	open($in, "<$console_layers", $console) unless defined($in);
 	$in = \*STDIN unless defined($in);
 	$self->{IN} = $in;
 
 	my $out;
 	$out = $OUT if ref($OUT) eq "GLOB";
 	$out = \$OUT if ref(\$OUT) eq "GLOB";
-	open($out, '>', $consoleOUT) unless defined($out);
+	open($out, ">$console_layers", $consoleOUT) unless defined($out);
 	$out = \*STDOUT unless defined($out);
 	$self->{OUT} = $out;
+
+	$self->{features}->{utf8} = grep(":utf8", PerlIO::get_layers($in));
 
 	return ($self->{IN}, $self->{OUT});
 }
@@ -611,12 +629,17 @@ B<SetHistory($line1[, $line2[, ...]])>
 
 rewrites all history by argument values.
 
-Returns copy of the history in Array.
-
 =cut
 sub sethistory
 {
 	my $self = shift;
+	if ($self->{features}->{utf8})
+	{
+		for (my $i = 0; $i < @_; $i++)
+		{
+			utf8::decode($_[$i]);
+		}
+	}
 	@{$self->{history}} = @_;
 	return 1;
 }

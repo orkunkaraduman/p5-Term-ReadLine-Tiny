@@ -116,10 +116,11 @@ This features are present:
 - _appname_ is not present and is the name of the application. **But not supported yet.**
 - _addhistory_ is present, always `TRUE`.
 - _minline_ is present, default 1. See `MinLine` method.
-- _autohistory_ is present, `FALSE` if minline is `undef`. See `MinLine` method.
+- _autohistory_ is present. `FALSE` if minline is `undef`. See `MinLine` method.
 - _gethistory_ is present, always `TRUE`.
 - _sethistory_ is present, always `TRUE`.
 - _changehistory_ is present, default `TRUE`. See `changehistory` method.
+- _utf8_ is present. `TRUE` if input file handle has `:utf8` layer.
 
 # Additional Methods and Functions
 
@@ -142,8 +143,6 @@ Returns copy of the history in Array.
 **SetHistory($line1\[, $line2\[, ...\]\])**
 
 rewrites all history by argument values.
-
-Returns copy of the history in Array.
 
 ## changehistory(\[$changehistory\])
 

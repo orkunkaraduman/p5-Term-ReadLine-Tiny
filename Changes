@@ -4,6 +4,7 @@
 		- Added AddHistory(), synonym of addhistory()
 		- Removed history()
 		- Added gethistory(), sethistory()
+		- Improved UTF-8 support
 
 1.03	2017-05-02
 		- Fix for 'Bug #121293 for Term-ReadLine-Tiny: Experimental pop on scalar is now forbidden'
