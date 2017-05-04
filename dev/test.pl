@@ -31,8 +31,8 @@ my $s;
 	use Term::ReadLine::Tiny;
 	
 	$term = Term::ReadLine::Tiny->new();
-	binmode($term->IN, ":utf8");
-	binmode($term->OUT, ":utf8");
+	#binmode($term->IN, ":utf8");
+	#binmode($term->OUT, ":utf8");
 	while ( defined($_ = $term->readline("Prompt: ")) )
 	{
 		print "$_\n";
