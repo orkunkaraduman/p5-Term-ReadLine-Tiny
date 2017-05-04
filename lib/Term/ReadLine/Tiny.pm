@@ -164,7 +164,9 @@ sub readline
 		my $a = substr($line, $index);
 		@line = @line[0..$index-1];
 		$line = substr($line, 0, $index);
+		print $out "\x7F";
 		print $out "\e[J";
+		print $out "\e[D";
 		for my $c (split("", $text))
 		{
 			$s = encode_controlchar($c);
