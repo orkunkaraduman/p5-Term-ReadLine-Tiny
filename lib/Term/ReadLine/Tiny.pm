@@ -44,9 +44,9 @@ B<C<RightArrow>:> Moves cursor forward to one character.
 
 B<C<LeftArrow>:> Moves cursor back to one character.
 
-B<C<Home>:> Moves cursor to the start of the line.
+B<C<Home> or C<^A>:> Moves cursor to the start of the line.
 
-B<C<End>:> Moves cursor to the end of the line.
+B<C<End> or C<^E>:> Moves cursor to the end of the line.
 
 B<C<PageUp>:> Change line to first line of history.
 
@@ -322,6 +322,14 @@ sub readline
 				{
 					$backspace->();
 				}
+                when (/\x01/)    # ^A
+                {
+					$home->();
+                }
+                when (/\x05/)    # ^E
+                {
+					$end->();
+                }
 				when (/[\x00-\x1F]|\x7F/)
 				{
 					$print->($char);
