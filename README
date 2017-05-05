@@ -2,7 +2,7 @@ NAME
     Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 VERSION
-    version 1.04
+    version 1.05
 
 SYNOPSIS
             use Term::ReadLine::Tiny;
@@ -41,9 +41,9 @@ DESCRIPTION
 
     "LeftArrow": Moves cursor back to one character.
 
-    "Home": Moves cursor to the start of the line.
+    "Home" or "^A": Moves cursor to the start of the line.
 
-    "End": Moves cursor to the end of the line.
+    "End" or "^E": Moves cursor to the end of the line.
 
     "PageUp": Change line to first line of history.
 

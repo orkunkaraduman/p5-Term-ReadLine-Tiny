@@ -4,7 +4,7 @@ Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 # VERSION
 
-version 1.04
+version 1.05
 
 # SYNOPSIS
 
@@ -43,9 +43,9 @@ Also fully supports UTF-8, details in [UTF-8 section](https://metacpan.org/pod/T
 
 **`LeftArrow`:** Moves cursor back to one character.
 
-**`Home`:** Moves cursor to the start of the line.
+**`Home` or `^A`:** Moves cursor to the start of the line.
 
-**`End`:** Moves cursor to the end of the line.
+**`End` or `^E`:** Moves cursor to the end of the line.
 
 **`PageUp`:** Change line to first line of history.
 
