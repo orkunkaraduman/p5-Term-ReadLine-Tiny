@@ -5,7 +5,7 @@ Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 =head1 VERSION
 
-version 1.04
+version 1.05
 
 =head1 SYNOPSIS
 
@@ -44,9 +44,9 @@ B<C<RightArrow>:> Moves cursor forward to one character.
 
 B<C<LeftArrow>:> Moves cursor back to one character.
 
-B<C<Home>:> Moves cursor to the start of the line.
+B<C<Home> or C<^A>:> Moves cursor to the start of the line.
 
-B<C<End>:> Moves cursor to the end of the line.
+B<C<End> or C<^E>:> Moves cursor to the end of the line.
 
 B<C<PageUp>:> Change line to first line of history.
 
@@ -73,7 +73,7 @@ require Term::ReadKey;
 BEGIN
 {
 	require Exporter;
-	our $VERSION     = '1.04';
+	our $VERSION     = '1.05';
 	our @ISA         = qw(Exporter);
 	our @EXPORT      = qw();
 	our @EXPORT_OK   = qw();
@@ -305,10 +305,18 @@ sub readline
 				{
 					$esc = "";
 				}
-				when (/\x04/)
+				when (/\x01/)	# ^A
+				{
+					$home->();
+				}
+				when (/\x04/)	# ^D
 				{
 					$result = undef;
 					last;
+				}
+				when (/\x05/)	# ^E
+				{
+					$end->();
 				}
 				when (/\n|\r/)
 				{
