@@ -305,10 +305,18 @@ sub readline
 				{
 					$esc = "";
 				}
-				when (/\x04/)
+				when (/\x01/)	# ^A
+				{
+					$home->();
+				}
+				when (/\x04/)	# ^D
 				{
 					$result = undef;
 					last;
+				}
+				when (/\x05/)	# ^E
+				{
+					$end->();
 				}
 				when (/\n|\r/)
 				{
@@ -322,14 +330,6 @@ sub readline
 				{
 					$backspace->();
 				}
-                when (/\x01/)    # ^A
-                {
-					$home->();
-                }
-                when (/\x05/)    # ^E
-                {
-					$end->();
-                }
 				when (/[\x00-\x1F]|\x7F/)
 				{
 					$print->($char);
