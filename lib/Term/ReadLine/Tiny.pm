@@ -175,6 +175,9 @@ sub readline
 		my $a = substr($line, $index);
 		@line = @line[0..$index-1];
 		$line = substr($line, 0, $index);
+		print $out " ";
+		print $out "\e[D";
+		print $out "\e[J";
 		for my $c (split("", $text))
 		{
 			$s = encode_controlchar($c);
@@ -191,9 +194,6 @@ sub readline
 			}
 			$index++;
 		}
-		print $out " ";
-		print $out "\e[D";
-		print $out "\e[J";
 		unless ($ins)
 		{
 			$s = join("", @a);
@@ -207,6 +207,12 @@ sub readline
 		}
 		push @line, @a;
 		$line .= $a;
+		if ($index >= length($line))
+		{
+			print $out " ";
+			print $out "\e[D";
+			print $out "\e[J";
+		}
 	};
 	my $print = sub {
 		my ($text) = @_;
