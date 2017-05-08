@@ -5,7 +5,7 @@ Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 =head1 VERSION
 
-version 1.05
+version 1.06
 
 =head1 SYNOPSIS
 
@@ -73,7 +73,7 @@ require Term::ReadKey;
 BEGIN
 {
 	require Exporter;
-	our $VERSION     = '1.05';
+	our $VERSION     = '1.06';
 	our @ISA         = qw(Exporter);
 	our @EXPORT      = qw();
 	our @EXPORT_OK   = qw();
@@ -175,9 +175,9 @@ sub readline
 		my $a = substr($line, $index);
 		@line = @line[0..$index-1];
 		$line = substr($line, 0, $index);
-		print $out "\x7F";
-		print $out "\e[J";
+		print $out " ";
 		print $out "\e[D";
+		print $out "\e[J";
 		for my $c (split("", $text))
 		{
 			$s = encode_controlchar($c);

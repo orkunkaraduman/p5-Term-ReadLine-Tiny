@@ -4,7 +4,7 @@ Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 # VERSION
 
-version 1.05
+version 1.06
 
 # SYNOPSIS
 
