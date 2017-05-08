@@ -56,6 +56,8 @@ B<C<Insert>:> Switch typing mode between insert and overwrite.
 
 B<C<Delete>:> Deletes one character at cursor. Does nothing if no character at cursor.
 
+B<C<Tab> or C<^I>:> Completes line automatically by history.
+
 B<C<^D>:> Aborts the operation. Returns C<undef>.
 
 =cut
@@ -333,6 +335,17 @@ sub readline
 				when (/\x05/)	# ^E
 				{
 					$end->();
+				}
+				when (/\t/)	# ^I
+				{
+					for (my $i = $history_index; $i >= 0; $i--)
+					{
+						if ($history->[$i] =~ /^$line/)
+						{
+							$set->($history->[$i]);
+							last;
+						}
+					}
 				}
 				when (/\n|\r/)
 				{

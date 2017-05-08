@@ -1,5 +1,6 @@
 1.07	2017-05-08
 		- Bug fix: Cursor appearance at end of terminal line
+		- Line auto completion by Tab
 
 1.06	2017-05-08
 		- Bug #121555 'Still does not work with the CPAN shell' fix
