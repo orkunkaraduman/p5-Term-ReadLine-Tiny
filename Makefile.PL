@@ -21,7 +21,7 @@ WriteMakefile(
 			version		=> 2,
 		},
 		resources		=> {
-			homepage	=> 'https://metacpan.org/release/Term-ReadLine-Tiny',
+			homepage	=> 'https://github.com/orkunkaraduman/p5-Term-ReadLine-Tiny/tree/master',
 			license		=> 'https://www.gnu.org/licenses/gpl-3.0.html',
 			repository	=> {
 				type	=> 'git',
