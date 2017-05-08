@@ -262,6 +262,11 @@ sub readline
 		return if $index >= length($line);
 		print $out $line[$index];
 		$index++;
+		unless ($index >= length($line))
+		{
+			print $out $line[$index];
+			print $out "\e[D";
+		}
 	};
 	my $up = sub {
 		return if $history_index <= 0;
