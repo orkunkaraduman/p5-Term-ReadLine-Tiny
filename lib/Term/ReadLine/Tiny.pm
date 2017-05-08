@@ -268,10 +268,15 @@ sub readline
 		return if $index >= length($line);
 		print $out $line[$index];
 		$index++;
-		unless ($index >= length($line))
+		if ($index >= length($line))
+		{
+			print $out " ";
+			print $out "\e[D";
+			print $out "\e[J";
+		} else
 		{
 			print $out $line[$index];
-			print $out "\e[D";
+			print $out "\e[D" x length($line[$index]);
 		}
 	};
 	my $up = sub {
