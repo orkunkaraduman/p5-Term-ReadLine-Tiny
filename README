@@ -54,6 +54,8 @@ DESCRIPTION
     "Delete": Deletes one character at cursor. Does nothing if no character
     at cursor.
 
+    "Tab" or "^I": Completes line automatically by history.
+
     "^D": Aborts the operation. Returns "undef".
 
 Standard Methods and Functions
@@ -161,7 +163,8 @@ Other Methods and Functions
     argument "c".
 
 UTF-8
-    "Term::ReadLine::Tiny" fully supports UTF-8, opens console input/output
+    "Term::ReadLine::Tiny" fully supports UTF-8. If no input/output handle
+    specified when calling "new()" or "newTTY()", opens console input/output
     file handles with ":utf8" layer by "LANG" environment variable. You
     should set ":utf8" layer explicitly, if input/output file handles
     specified with "new()" or "newTTY()".
