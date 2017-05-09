@@ -5,7 +5,7 @@ Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 =head1 VERSION
 
-version 1.06
+version 1.07
 
 =head1 SYNOPSIS
 
@@ -56,6 +56,8 @@ B<C<Insert>:> Switch typing mode between insert and overwrite.
 
 B<C<Delete>:> Deletes one character at cursor. Does nothing if no character at cursor.
 
+B<C<Tab> or C<^I>:> Completes line automatically by history.
+
 B<C<^D>:> Aborts the operation. Returns C<undef>.
 
 =cut
@@ -73,7 +75,7 @@ require Term::ReadKey;
 BEGIN
 {
 	require Exporter;
-	our $VERSION     = '1.06';
+	our $VERSION     = '1.07';
 	our @ISA         = qw(Exporter);
 	our @EXPORT      = qw();
 	our @EXPORT_OK   = qw();
@@ -207,6 +209,12 @@ sub readline
 		}
 		push @line, @a;
 		$line .= $a;
+		if ($index >= length($line))
+		{
+			print $out " ";
+			print $out "\e[D";
+			print $out "\e[J";
+		}
 	};
 	my $print = sub {
 		my ($text) = @_;
@@ -262,6 +270,16 @@ sub readline
 		return if $index >= length($line);
 		print $out $line[$index];
 		$index++;
+		if ($index >= length($line))
+		{
+			print $out " ";
+			print $out "\e[D";
+			print $out "\e[J";
+		} else
+		{
+			print $out $line[$index];
+			print $out "\e[D" x length($line[$index]);
+		}
 	};
 	my $up = sub {
 		return if $history_index <= 0;
@@ -317,6 +335,17 @@ sub readline
 				when (/\x05/)	# ^E
 				{
 					$end->();
+				}
+				when (/\t/)	# ^I
+				{
+					for (my $i = $history_index; $i >= 0; $i--)
+					{
+						if ($history->[$i] =~ /^$line/)
+						{
+							$set->($history->[$i]);
+							last;
+						}
+					}
 				}
 				when (/\n|\r/)
 				{
@@ -771,9 +800,9 @@ sub encode_controlchar
 __END__
 =head1 UTF-8
 
-C<Term::ReadLine::Tiny> fully supports UTF-8, opens console input/output file handles with C<:utf8> layer by C<LANG>
-environment variable. You should set C<:utf8> layer explicitly, if input/output file handles specified with
-C<new()> or C<newTTY()>.
+C<Term::ReadLine::Tiny> fully supports UTF-8. If no input/output handle specified when calling C<new()> or C<newTTY()>,
+opens console input/output file handles with C<:utf8> layer by C<LANG> environment variable. You should set C<:utf8>
+layer explicitly, if input/output file handles specified with C<new()> or C<newTTY()>.
 
 	$term = Term::ReadLine::Tiny->new("", $in, $out);
 	binmode($term->IN, ":utf8");

@@ -4,7 +4,7 @@ Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 # VERSION
 
-version 1.06
+version 1.07
 
 # SYNOPSIS
 
@@ -54,6 +54,8 @@ Also fully supports UTF-8, details in [UTF-8 section](https://metacpan.org/pod/T
 **`Insert`:** Switch typing mode between insert and overwrite.
 
 **`Delete`:** Deletes one character at cursor. Does nothing if no character at cursor.
+
+**`Tab` or `^I`:** Completes line automatically by history.
 
 **`^D`:** Aborts the operation. Returns `undef`.
 
@@ -164,9 +166,9 @@ encodes if argument `c` is a control character, otherwise returns argument `c`.
 
 # UTF-8
 
-`Term::ReadLine::Tiny` fully supports UTF-8, opens console input/output file handles with `:utf8` layer by `LANG`
-environment variable. You should set `:utf8` layer explicitly, if input/output file handles specified with
-`new()` or `newTTY()`.
+`Term::ReadLine::Tiny` fully supports UTF-8. If no input/output handle specified when calling `new()` or `newTTY()`,
+opens console input/output file handles with `:utf8` layer by `LANG` environment variable. You should set `:utf8`
+layer explicitly, if input/output file handles specified with `new()` or `newTTY()`.
 
         $term = Term::ReadLine::Tiny->new("", $in, $out);
         binmode($term->IN, ":utf8");
