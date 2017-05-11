@@ -825,13 +825,14 @@ sub encode_controlchar
 __END__
 =head1 UTF-8
 
-C<Term::ReadLine::Tiny> fully supports UTF-8. If no input/output handle specified when calling C<new()> or C<newTTY()>,
+C<Term::ReadLine::Tiny> fully supports UTF-8. If no input/output file handle specified when calling C<new()> or C<newTTY()>,
 opens console input/output file handles with C<:utf8> layer by C<LANG> environment variable. You should set C<:utf8>
 layer explicitly, if input/output file handles specified with C<new()> or C<newTTY()>.
 
 	$term = Term::ReadLine::Tiny->new("", $in, $out);
 	binmode($term->IN, ":utf8");
 	binmode($term->OUT, ":utf8");
+	$term->utf8(0); # to get UTF-8 marked string
 	while ( defined($_ = $term->readline("Prompt: ")) )
 	{
 		print "$_\n";
