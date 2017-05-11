@@ -654,7 +654,7 @@ sub gethistory
 {
 	my $self = shift;
 	my @result = @{$self->{history}};
-	if (grep(":utf8", PerlIO::get_layers($self->{IN})) and $self->{features}->{utf8})
+	if ($self->{features}->{utf8})
 	{
 		for (my $i = 0; $i < @result; $i++)
 		{
@@ -778,7 +778,7 @@ sub readkey
 
 =head2 utf8([$enable])
 
-If C<$enable> is C<TRUE>, all read methods return that binary encoded UTF-8 string.
+If C<$enable> is C<TRUE>, all read methods return that binary encoded UTF-8 string as possible.
 
 Returns the old value.
 
@@ -832,7 +832,7 @@ layer explicitly, if input/output file handles specified with C<new()> or C<newT
 	$term = Term::ReadLine::Tiny->new("", $in, $out);
 	binmode($term->IN, ":utf8");
 	binmode($term->OUT, ":utf8");
-	$term->utf8(0); # to get UTF-8 marked string
+	$term->utf8(0); # to get UTF-8 marked string as possible
 	while ( defined($_ = $term->readline("Prompt: ")) )
 	{
 		print "$_\n";

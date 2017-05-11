@@ -162,7 +162,7 @@ Returns `undef` on `EOF`.
 
 ## utf8(\[$enable\])
 
-If `$enable` is `TRUE`, all read methods return that binary encoded UTF-8 string.
+If `$enable` is `TRUE`, all read methods return that binary encoded UTF-8 string as possible.
 
 Returns the old value.
 
@@ -179,7 +179,7 @@ layer explicitly, if input/output file handles specified with `new()` or `newTTY
         $term = Term::ReadLine::Tiny->new("", $in, $out);
         binmode($term->IN, ":utf8");
         binmode($term->OUT, ":utf8");
-        $term->utf8(0); # to get UTF-8 marked string
+        $term->utf8(0); # to get UTF-8 marked string as possible
         while ( defined($_ = $term->readline("Prompt: ")) )
         {
                 print "$_\n";

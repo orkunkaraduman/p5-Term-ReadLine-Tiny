@@ -160,7 +160,7 @@ Other Methods and Functions
 
   utf8([$enable])
     If $enable is "TRUE", all read methods return that binary encoded UTF-8
-    string.
+    string as possible.
 
     Returns the old value.
 
@@ -178,7 +178,7 @@ UTF-8
             $term = Term::ReadLine::Tiny->new("", $in, $out);
             binmode($term->IN, ":utf8");
             binmode($term->OUT, ":utf8");
-            $term->utf8(0); # to get UTF-8 marked string
+            $term->utf8(0); # to get UTF-8 marked string as possible
             while ( defined($_ = $term->readline("Prompt: ")) )
             {
                     print "$_\n";
