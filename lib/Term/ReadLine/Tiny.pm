@@ -375,29 +375,29 @@ sub readline
 		{
 			given ($esc)
 			{
-				when (/^\[(A|0A)/)
+				when (/^(\[|O)(A|0A)/)
 				{
 					$up->();
 				}
-				when (/^\[(B|0B)/)
+				when (/^(\[|O)(B|0B)/)
 				{
 					$down->();
 				}
-				when (/^\[(C|0C)/)
+				when (/^(\[|O)(C|0C)/)
 				{
 					$right->();
 				}
-				when (/^\[(D|0D)/)
+				when (/^(\[|O)(D|0D)/)
 				{
 					$left->();
 				}
-				when (/^\[(H|0H)/)
-				{
-					$home->();
-				}
-				when (/^\[(F|0F)/)
+				when (/^(\[|O)(F|0F)/)
 				{
 					$end->();
+				}
+				when (/^(\[|O)(H|0H)/)
+				{
+					$home->();
 				}
 				when (/^\[(\d)~/)
 				{

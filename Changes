@@ -1,5 +1,5 @@
 1.08	2017-05-11
-		- 
+		- Added keys that starting with ^[O
 
 1.07	2017-05-09
 		- Bug fix: Cursor appearance at end of terminal line
