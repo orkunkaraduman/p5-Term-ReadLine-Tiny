@@ -171,6 +171,18 @@ sub readline
 	my $history_index;
 	my $ins_mode = 0;
 
+	my $autocomplete = $self->{autocomplete} || sub
+	{
+		for (my $i = $history_index; $i >= 0; $i--)
+		{
+			if ($history->[$i] =~ /^$line/)
+			{
+				return $history->[$i];
+			}
+		}
+		return;
+	};
+
 	my $write = sub {
 		my ($text, $ins) = @_;
 		my $s;
@@ -339,14 +351,8 @@ sub readline
 				}
 				when (/\t/)	# ^I
 				{
-					for (my $i = $history_index; $i >= 0; $i--)
-					{
-						if ($history->[$i] =~ /^$line/)
-						{
-							$set->($history->[$i]);
-							last;
-						}
-					}
+					my $newline = $autocomplete->($self, $line, $history_index);
+					$set->($newline) if defined $newline;
 				}
 				when (/\n|\r/)
 				{
@@ -818,6 +824,23 @@ sub encode_controlchar
 		}
 	}
 	return $s;
+}
+
+=head2 autocomplete($coderef)
+
+Sets a coderef to be used to autocompletion. If C<< $coderef >> is undef,
+will restore default behaviour.
+
+The coderef will be called like C<< $coderef->($term, $line, $ix) >>,
+where C<< $line >> is the existing line, and C<< $ix >> is the current
+location in the history. It should return the completed line, or undef
+if completion fails.
+
+=cut
+sub autocomplete
+{
+	my $self = shift;
+	$self->{autocomplete} = $_[0] if @_;
 }
 
 
