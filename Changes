@@ -1,5 +1,6 @@
 1.08	2017-05-11
 		- Added keys that starting with ^[O
+		- Returns always UTF-8 encoded string (binary string) when input is UTF-8
 
 1.07	2017-05-09
 		- Bug fix: Cursor appearance at end of terminal line

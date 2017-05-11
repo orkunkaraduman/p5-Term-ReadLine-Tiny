@@ -449,6 +449,7 @@ sub readline
 			$esc = undef;
 		}
 	}
+	utf8::encode($result) if defined($result) and utf8::is_utf8($result);
 
 	Term::ReadKey::ReadMode('restore', $self->{IN});
 	$self->{readmode} = '';
@@ -653,7 +654,15 @@ Returns copy of the history in Array.
 sub gethistory
 {
 	my $self = shift;
-	return @{$self->{history}};
+	my @result = @{$self->{history}};
+	if ($self->{features}->{utf8})
+	{
+		for (my $i = 0; $i < @result; $i++)
+		{
+			utf8::encode($result[$i]) if utf8::is_utf8($result[$i]);
+		}
+	}
+	return @result;
 }
 sub GetHistory
 {
@@ -761,6 +770,7 @@ sub readkey
 			last;
 		}
 	}
+	utf8::encode($result) if defined($result) and utf8::is_utf8($result);
 
 	Term::ReadKey::ReadMode('restore', $self->{IN});
 	$self->{readmode} = '';
