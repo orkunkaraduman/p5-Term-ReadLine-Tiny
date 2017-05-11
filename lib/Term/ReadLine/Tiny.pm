@@ -123,6 +123,7 @@ sub new
 	$self->{features}->{gethistory} = 1;
 	$self->{features}->{sethistory} = 1;
 	$self->{features}->{changehistory} = 1;
+	$self->{features}->{utf8} = 1;
 
 	$self->newTTY($IN, $OUT);
 
@@ -449,7 +450,7 @@ sub readline
 			$esc = undef;
 		}
 	}
-	utf8::encode($result) if defined($result) and utf8::is_utf8($result);
+	utf8::encode($result) if defined($result) and utf8::is_utf8($result) and $self->{features}->{utf8};
 
 	Term::ReadKey::ReadMode('restore', $self->{IN});
 	$self->{readmode} = '';
@@ -466,7 +467,7 @@ adds lines to the history of input.
 sub addhistory
 {
 	my $self = shift;
-	if ($self->{features}->{utf8})
+	if (grep(":utf8", PerlIO::get_layers($self->{IN})))
 	{
 		for (my $i = 0; $i < @_; $i++)
 		{
@@ -584,7 +585,7 @@ I<changehistory> is present, default C<TRUE>. See C<changehistory> method.
 
 =item *
 
-I<utf8> is present. C<TRUE> if input file handle has C<:utf8> layer.
+I<utf8> is present, default C<TRUE>. See C<utf8> method.
 
 =back
 
@@ -629,8 +630,6 @@ sub newTTY
 	$out = \*STDOUT unless defined($out);
 	$self->{OUT} = $out;
 
-	$self->{features}->{utf8} = grep(":utf8", PerlIO::get_layers($in));
-
 	return ($self->{IN}, $self->{OUT});
 }
 
@@ -655,7 +654,7 @@ sub gethistory
 {
 	my $self = shift;
 	my @result = @{$self->{history}};
-	if ($self->{features}->{utf8})
+	if (grep(":utf8", PerlIO::get_layers($self->{IN})) and $self->{features}->{utf8})
 	{
 		for (my $i = 0; $i < @result; $i++)
 		{
@@ -679,7 +678,7 @@ rewrites all history by argument values.
 sub sethistory
 {
 	my $self = shift;
-	if ($self->{features}->{utf8})
+	if (grep(":utf8", PerlIO::get_layers($self->{IN})))
 	{
 		for (my $i = 0; $i < @_; $i++)
 		{
@@ -770,16 +769,32 @@ sub readkey
 			last;
 		}
 	}
-	utf8::encode($result) if defined($result) and utf8::is_utf8($result);
+	utf8::encode($result) if defined($result) and utf8::is_utf8($result) and $self->{features}->{utf8};
 
 	Term::ReadKey::ReadMode('restore', $self->{IN});
 	$self->{readmode} = '';
 	return $result;
 }
 
+=head2 utf8([$enable])
+
+If C<$enable> is C<TRUE>, all read methods return that binary encoded UTF-8 string.
+
+Returns the old value.
+
+=cut
+sub utf8
+{
+	my $self = shift;
+	my ($enable) = @_;
+	my $result = $self->{features}->{utf8};
+	$self->{features}->{utf8} = $enable if @_ >= 1;
+	return $result;
+}
+
 =head2 encode_controlchar($c)
 
-encodes if argument C<c> is a control character, otherwise returns argument C<c>.
+encodes if argument C<$c> is a control character, otherwise returns argument C<c>.
 
 =cut
 sub encode_controlchar

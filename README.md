@@ -122,7 +122,7 @@ This features are present:
 - _gethistory_ is present, always `TRUE`.
 - _sethistory_ is present, always `TRUE`.
 - _changehistory_ is present, default `TRUE`. See `changehistory` method.
-- _utf8_ is present. `TRUE` if input file handle has `:utf8` layer.
+- _utf8_ is present, default `TRUE`. See `utf8` method.
 
 # Additional Methods and Functions
 
@@ -160,9 +160,15 @@ reads a key from input and echoes if _echo_ argument is `TRUE`.
 
 Returns `undef` on `EOF`.
 
+## utf8(\[$enable\])
+
+If `$enable` is `TRUE`, all read methods return that binary encoded UTF-8 string.
+
+Returns the old value.
+
 ## encode\_controlchar($c)
 
-encodes if argument `c` is a control character, otherwise returns argument `c`.
+encodes if argument `$c` is a control character, otherwise returns argument `c`.
 
 # UTF-8
 
