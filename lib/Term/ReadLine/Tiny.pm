@@ -915,6 +915,20 @@ B<CPAN> L<https://metacpan.org/release/Term-ReadLine-Tiny>
 
 Orkun Karaduman <orkunkaraduman@gmail.com>
 
+=head1 CONTRIBUTORS
+
+=over
+
+=item *
+
+Adriano Ferreira (FERREIRA) <ferreira@cpan.org>
+
+=item *
+
+Toby Inkster (TOBYINK) <tobyink@cpan.org>
+
+=back
+
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (C) 2017  Orkun Karaduman <orkunkaraduman@gmail.com>

@@ -4,7 +4,7 @@ Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 # VERSION
 
-version 1.08
+version 1.09
 
 # SYNOPSIS
 
@@ -170,6 +170,16 @@ Returns the old value.
 
 encodes if argument `$c` is a control character, otherwise returns argument `c`.
 
+## autocomplete($coderef)
+
+Sets a coderef to be used to autocompletion. If `$coderef` is undef,
+will restore default behaviour.
+
+The coderef will be called like `$coderef->($term, $line, $ix)`,
+where `$line` is the existing line, and `$ix` is the current
+location in the history. It should return the completed line, or undef
+if completion fails.
+
 # UTF-8
 
 `Term::ReadLine::Tiny` fully supports UTF-8. If no input/output file handle specified when calling `new()` or `newTTY()`,
@@ -220,6 +230,11 @@ This module requires these other modules and libraries:
 # AUTHOR
 
 Orkun Karaduman &lt;orkunkaraduman@gmail.com&gt;
+
+# CONTRIBUTORS
+
+- Adriano Ferreira (FERREIRA) &lt;ferreira@cpan.org&gt;
+- Toby Inkster (TOBYINK) &lt;tobyink@cpan.org&gt;
 
 # COPYRIGHT AND LICENSE
 
