@@ -168,7 +168,10 @@ Returns the old value.
 
 ## encode\_controlchar($c)
 
-encodes if argument `$c` is a control character, otherwise returns argument `c`.
+encodes if first character of argument `$c` is a control character,
+otherwise returns first character of argument `$c`.
+
+Example: &quot;\\n&quot; is ^J.
 
 ## autocomplete($coderef)
 
@@ -229,7 +232,7 @@ This module requires these other modules and libraries:
 
 # AUTHOR
 
-Orkun Karaduman &lt;orkunkaraduman@gmail.com&gt;
+Orkun Karaduman (ORKUN) &lt;orkun@cpan.org&gt;
 
 # CONTRIBUTORS
 

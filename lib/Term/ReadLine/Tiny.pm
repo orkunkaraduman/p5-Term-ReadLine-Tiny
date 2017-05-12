@@ -800,7 +800,10 @@ sub utf8
 
 =head2 encode_controlchar($c)
 
-encodes if argument C<$c> is a control character, otherwise returns argument C<c>.
+encodes if first character of argument C<$c> is a control character,
+otherwise returns first character of argument C<$c>.
+
+Example: "\n" is ^J.
 
 =cut
 sub encode_controlchar
@@ -913,7 +916,7 @@ B<CPAN> L<https://metacpan.org/release/Term-ReadLine-Tiny>
 
 =head1 AUTHOR
 
-Orkun Karaduman <orkunkaraduman@gmail.com>
+Orkun Karaduman (ORKUN) <orkun@cpan.org>
 
 =head1 CONTRIBUTORS
 
