@@ -213,12 +213,12 @@ sub readline
 		{
 			$s = join("", @a);
 			print $out $s;
-			print $out "\e[D" x length($s);
+			print $out "\b" x length($s);
 		} else
 		{
 			$s = join("", @a);
 			print $out $s;
-			print $out "\e[D" x (length($s) - length(join("", @a[0..length($text)-1])));
+			print $out "\b" x (length($s) - length(join("", @a[0..length($text)-1])));
 		}
 		push @line, @a;
 		$line .= $a;
@@ -235,7 +235,7 @@ sub readline
 	};
 	my $set = sub {
 		my ($text) = @_;
-		print $out "\e[D" x length(join("", @line[0..$index-1]));
+		print $out "\b" x length(join("", @line[0..$index-1]));
 		print $out "\e[J";
 		@line = ();
 		$line = "";
@@ -247,11 +247,11 @@ sub readline
 		my @a = @line[$index..$#line];
 		my $a = substr($line, $index);
 		$index--;
-		print $out "\e[D" x length($line[$index]);
+		print $out "\b" x length($line[$index]);
 		@line = @line[0..$index-1];
 		$line = substr($line, 0, $index);
 		$write->($a);
-		print $out "\e[D" x length(join("", @a));
+		print $out "\b" x length(join("", @a));
 		$index -= scalar(@a);
 	};
 	my $delete = sub {
@@ -260,11 +260,11 @@ sub readline
 		@line = @line[0..$index-1];
 		$line = substr($line, 0, $index);
 		$write->($a);
-		print $out "\e[D" x length(join("", @a));
+		print $out "\b" x length(join("", @a));
 		$index -= scalar(@a);
 	};
 	my $home = sub {
-		print $out "\e[D" x length(join("", @line[0..$index-1]));
+		print $out "\b" x length(join("", @line[0..$index-1]));
 		$index = 0;
 	};
 	my $end = sub {
@@ -276,7 +276,7 @@ sub readline
 	};
 	my $left = sub {
 		return if $index <= 0;
-		print $out "\e[D" x length($line[$index-1]);
+		print $out "\b" x length($line[$index-1]);
 		$index--;
 	};
 	my $right = sub {
@@ -635,6 +635,8 @@ sub newTTY
 	open($out, ">$console_layers", $consoleOUT) unless defined($out);
 	$out = \*STDOUT unless defined($out);
 	$self->{OUT} = $out;
+
+	print $out "\e[?7h";
 
 	return ($self->{IN}, $self->{OUT});
 }
