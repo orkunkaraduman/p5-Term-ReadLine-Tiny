@@ -636,9 +636,6 @@ sub newTTY
 	$out = \*STDOUT unless defined($out);
 	$self->{OUT} = $out;
 
-	print $out "\e[20h";
-	print $out "\e[?7h";
-
 	return ($self->{IN}, $self->{OUT});
 }
 
