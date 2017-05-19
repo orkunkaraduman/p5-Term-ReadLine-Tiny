@@ -196,6 +196,10 @@ UTF-8
             }
             print "\n";
 
+KNOWN BUGS
+    *   Cursor doesn't move to new line at end of terminal line on some
+        native terminals.
+
 SEE ALSO
     *   Term::ReadLine::Tiny::readline
         <https://metacpan.org/pod/Term::ReadLine::Tiny::readline> - A non-OO

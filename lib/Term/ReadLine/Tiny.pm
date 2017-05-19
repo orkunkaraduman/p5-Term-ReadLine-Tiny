@@ -871,6 +871,16 @@ layer explicitly, if input/output file handles specified with C<new()> or C<newT
 	}
 	print "\n";
 
+=head1 KNOWN BUGS
+
+=over
+
+=item *
+
+Cursor doesn't move to new line at end of terminal line on some native terminals.
+
+=back
+
 =head1 SEE ALSO
 
 =over

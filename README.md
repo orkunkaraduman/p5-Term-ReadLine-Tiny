@@ -199,6 +199,10 @@ layer explicitly, if input/output file handles specified with `new()` or `newTTY
         }
         print "\n";
 
+# KNOWN BUGS
+
+- Cursor doesn&#39;t move to new line at end of terminal line on some native terminals.
+
 # SEE ALSO
 
 - [Term::ReadLine::Tiny::readline](https://metacpan.org/pod/Term::ReadLine::Tiny::readline) - A non-OO package of Term::ReadLine::Tiny
