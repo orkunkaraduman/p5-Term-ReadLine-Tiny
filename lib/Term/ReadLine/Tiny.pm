@@ -170,6 +170,7 @@ sub readline
 	my ($line, $index) = ("", 0);
 	my $history_index;
 	my $ins_mode = 0;
+	my ($row, $col);
 
 	my $autocomplete = $self->{autocomplete} || sub
 	{
@@ -190,9 +191,9 @@ sub readline
 		my $a = substr($line, $index);
 		@line = @line[0..$index-1];
 		$line = substr($line, 0, $index);
-		print $out " ";
-		print $out "\e[D";
-		print $out "\e[J";
+		#print $out " ";
+		#print $out "\e[D";
+		#print $out "\e[J";
 		for my $c (split("", $text))
 		{
 			$s = encode_controlchar($c);
@@ -285,9 +286,9 @@ sub readline
 		$index++;
 		if ($index >= length($line))
 		{
-			print $out " ";
-			print $out "\e[D";
-			print $out "\e[J";
+			#print $out " ";
+			#print $out "\e[D";
+			#print $out "\e[J";
 		} else
 		{
 			print $out $line[$index];
@@ -378,7 +379,7 @@ sub readline
 			next;
 		}
 		$esc .= $char;
-		if ($esc =~ /^.\d?\D/)
+		if ($esc =~ /^.(\d+|\d+;\d+)?[^\d;]/)
 		{
 			given ($esc)
 			{
@@ -406,7 +407,7 @@ sub readline
 				{
 					$home->();
 				}
-				when (/^\[(\d)~/)
+				when (/^\[(\d+)~/)
 				{
 					given ($1)
 					{
@@ -447,6 +448,11 @@ sub readline
 							#$print->("\e$esc");
 						}
 					}
+				}
+				when (/^\[(\d+);(\d+)R/)
+				{
+					$row = $1;
+					$col = $2;
 				}
 				default
 				{
