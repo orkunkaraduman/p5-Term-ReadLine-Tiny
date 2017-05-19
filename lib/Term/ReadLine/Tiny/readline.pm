@@ -5,7 +5,7 @@ Term::ReadLine::Tiny::readline - A non-OO package of Term::ReadLine::Tiny
 
 =head1 VERSION
 
-version 1.09
+version 1.10
 
 =head1 SYNOPSIS
 
@@ -34,7 +34,7 @@ use Term::ReadLine::Tiny;
 BEGIN
 {
 	require Exporter;
-	our $VERSION     = '1.09';
+	our $VERSION     = '1.10';
 	our @ISA         = qw(Exporter);
 	our @EXPORT      = qw(readline readkey);
 	our @EXPORT_OK   = qw();
@@ -93,7 +93,7 @@ B<CPAN> L<https://metacpan.org/release/Term-ReadLine-Tiny>
 
 =head1 AUTHOR
 
-Orkun Karaduman <orkunkaraduman@gmail.com>
+Orkun Karaduman (ORKUN) <orkun@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
