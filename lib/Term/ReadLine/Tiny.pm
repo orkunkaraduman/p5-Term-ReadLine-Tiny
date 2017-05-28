@@ -82,13 +82,13 @@ BEGIN
 }
 
 
-=head1 Standard Methods and Functions
+=head1 STANDARD METHODS AND FUNCTIONS
 
 =cut
 
 =head2 ReadLine()
 
-returns the actual package that executes the commands. If this package is used, the value is C<Term::ReadLine::Tiny>.
+Returns the actual package that executes the commands. If this package is used, the value is C<Term::ReadLine::Tiny>.
 
 =cut
 sub ReadLine
@@ -98,7 +98,7 @@ sub ReadLine
 
 =head2 new([$appname[, IN[, OUT]]])
 
-returns the handle for subsequent calls to following functions.
+Returns the handle for subsequent calls to following functions.
 Argument I<appname> is the name of the application B<but not supported yet>.
 Optionally can be followed by two arguments for IN and OUT filehandles. These arguments should be globs.
 
@@ -142,7 +142,7 @@ sub DESTROY
 
 =head2 readline([$prompt[, $default]])
 
-interactively gets an input line. Trailing newline is removed.
+Interactively gets an input line. Trailing newline is removed.
 
 Returns C<undef> on C<EOF>.
 
@@ -473,7 +473,7 @@ sub readline
 
 B<AddHistory($line1[, $line2[, ...]])>
 
-adds lines to the history of input.
+Adds lines to the history of input.
 
 =cut
 sub addhistory
@@ -496,7 +496,7 @@ sub AddHistory
 
 =head2 IN()
 
-returns the filehandle for input.
+Returns the filehandle for input.
 
 =cut
 sub IN
@@ -507,7 +507,7 @@ sub IN
 
 =head2 OUT()
 
-returns the filehandle for output.
+Returns the filehandle for output.
 
 =cut
 sub OUT
@@ -542,25 +542,39 @@ sub minline
 
 =head2 findConsole()
 
-returns an array with two strings that give most appropriate names for files for input and output using conventions C<"<$in">, C<">out">.
+B<findconsole()>
+
+Returns an array with two strings that give most appropriate names for files for input and output using conventions C<"<$in">, C<">out">.
 
 =cut
 sub findConsole
 {
 	return (Term::ReadLine::Stub::findConsole(@_));
 }
+sub findconsole
+{
+	return findConsole(@_);
+}
 
 =head2 Attribs()
 
-returns a reference to a hash which describes internal configuration of the package. B<Not supported in this package.>
+B<attribs()>
+
+Returns a reference to a hash which describes internal configuration of the package. B<Not supported in this package.>
 
 =cut
 sub Attribs
 {
 	return {};
 }
+sub attribs
+{
+	return Attribs(@_);
+}
 
 =head2 Features()
+
+B<features()>
 
 Returns a reference to a hash with keys being features present in current implementation.
 This features are present:
@@ -608,8 +622,12 @@ sub Features
 	my %features = %{$self->{features}};
 	return \%features;
 }
+sub features
+{
+	return Features(@_);
+}
 
-=head1 Additional Methods and Functions
+=head1 ADDITIONAL METHODS AND FUNCTIONS
 
 =cut
 
@@ -704,6 +722,10 @@ sub SetHistory
 {
 	return sethistory(@_);
 }
+
+=head1 NON-STANDARD METHODS AND FUNCTIONS
+
+=cut
 
 =head2 changehistory([$changehistory])
 
