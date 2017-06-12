@@ -10,6 +10,7 @@ WriteMakefile(
 	PREREQ_PM			=> {
 		'Term::ReadLine'	=> '1.07',
 		'Term::ReadKey'	=> '2.33',
+		'Term::Cap'	=> '1.13',
 	},
 	EXE_FILES			=> [qw(
 	)],

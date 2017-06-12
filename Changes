@@ -1,3 +1,6 @@
+1.10	2017-06-12
+		- Added termcap support
+
 1.09	2017-05-19
 		- Make tab completion more flexible, provide example
 		- Bug fix: Wrapping and cursor moving problems at some terminals (SCREEN, etc..)

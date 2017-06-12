@@ -70,6 +70,7 @@ require utf8;
 require PerlIO;
 require Term::ReadLine;
 require Term::ReadKey;
+require Term::Cap;
 
 
 BEGIN
@@ -144,7 +145,7 @@ sub DESTROY
 
 Interactively gets an input line. Trailing newline is removed.
 
-Returns C<undef> on C<EOF>.
+Returns C<undef> on C<EOF> or error.
 
 =cut
 sub readline
@@ -161,6 +162,13 @@ sub readline
 		chomp $line if defined $line;
 		return $line;
 	}
+
+	my $termcap;
+	eval {
+		$termcap = Term::Cap->Tgetent();
+	};
+	return unless defined($termcap);
+
 	local $\ = undef;
 
 	$self->{readmode} = 'cbreak';
@@ -191,9 +199,6 @@ sub readline
 		my $a = substr($line, $index);
 		@line = @line[0..$index-1];
 		$line = substr($line, 0, $index);
-		#print $out " ";
-		#print $out "\e[D";
-		#print $out "\e[J";
 		for my $c (split("", $text))
 		{
 			$s = encode_controlchar($c);
@@ -214,20 +219,20 @@ sub readline
 		{
 			$s = join("", @a);
 			print $out $s;
-			print $out "\b" x length($s);
+			print $out $termcap->{_bc} x length($s);
 		} else
 		{
 			$s = join("", @a);
 			print $out $s;
-			print $out "\b" x (length($s) - length(join("", @a[0..length($text)-1])));
+			print $out $termcap->{_bc} x (length($s) - length(join("", @a[0..length($text)-1])));
 		}
 		push @line, @a;
 		$line .= $a;
 		if ($index >= length($line))
 		{
 			print $out " ";
-			print $out "\e[D";
-			print $out "\e[J";
+			print $out $termcap->{_bc};
+			print $out $termcap->{_cd};
 		}
 	};
 	my $print = sub {
@@ -236,8 +241,8 @@ sub readline
 	};
 	my $set = sub {
 		my ($text) = @_;
-		print $out "\b" x length(join("", @line[0..$index-1]));
-		print $out "\e[J";
+		print $out $termcap->{_bc} x length(join("", @line[0..$index-1]));
+		print $out $termcap->{_cd};
 		@line = ();
 		$line = "";
 		$index = 0;
@@ -248,11 +253,11 @@ sub readline
 		my @a = @line[$index..$#line];
 		my $a = substr($line, $index);
 		$index--;
-		print $out "\b" x length($line[$index]);
+		print $out $termcap->{_bc} x length($line[$index]);
 		@line = @line[0..$index-1];
 		$line = substr($line, 0, $index);
 		$write->($a);
-		print $out "\b" x length(join("", @a));
+		print $out $termcap->{_bc} x length(join("", @a));
 		$index -= scalar(@a);
 	};
 	my $delete = sub {
@@ -261,11 +266,11 @@ sub readline
 		@line = @line[0..$index-1];
 		$line = substr($line, 0, $index);
 		$write->($a);
-		print $out "\b" x length(join("", @a));
+		print $out $termcap->{_bc} x length(join("", @a));
 		$index -= scalar(@a);
 	};
 	my $home = sub {
-		print $out "\b" x length(join("", @line[0..$index-1]));
+		print $out $termcap->{_bc} x length(join("", @line[0..$index-1]));
 		$index = 0;
 	};
 	my $end = sub {
@@ -277,7 +282,7 @@ sub readline
 	};
 	my $left = sub {
 		return if $index <= 0;
-		print $out "\b" x length($line[$index-1]);
+		print $out $termcap->{_bc} x length($line[$index-1]);
 		$index--;
 	};
 	my $right = sub {
@@ -287,12 +292,12 @@ sub readline
 		if ($index >= length($line))
 		{
 			#print $out " ";
-			#print $out "\e[D";
-			#print $out "\e[J";
+			#print $out $termcap->{_bc};
+			#print $out $termcap->{_cd};
 		} else
 		{
 			print $out $line[$index];
-			print $out "\e[D" x length($line[$index]);
+			print $out $termcap->{_bc} x length($line[$index]);
 		}
 	};
 	my $up = sub {
@@ -335,7 +340,7 @@ sub readline
 			{
 				when (/\e/)
 				{
-					$esc = "";
+					$esc = "\e";
 				}
 				when (/\x01/)	# ^A
 				{
@@ -363,7 +368,7 @@ sub readline
 					$result = $line;
 					last;
 				}
-				when (/[\b]|\x7F/)
+				when (/[\b]|\x7F|\Q$termcap->{_kb}\E/)
 				{
 					$backspace->();
 				}
@@ -379,84 +384,61 @@ sub readline
 			next;
 		}
 		$esc .= $char;
-		if ($esc =~ /^.(\d+|\d+;\d+)?[^\d;]/)
+		if ($esc =~ /^\e.(\d+|\d+;\d+)?[^\d;]/)
 		{
 			given ($esc)
 			{
-				when (/^(\[|O)(A|0A)/)
+				when (/^(\e(\[|O)(A|0A))|\Q$termcap->{_ku}\E/)
 				{
 					$up->();
 				}
-				when (/^(\[|O)(B|0B)/)
+				when (/^(\e(\[|O)(B|0B))|\Q$termcap->{_kd}\E/)
 				{
 					$down->();
 				}
-				when (/^(\[|O)(C|0C)/)
+				when (/^(\e(\[|O)(C|0C))|\Q$termcap->{_kr}\E/)
 				{
 					$right->();
 				}
-				when (/^(\[|O)(D|0D)/)
+				when (/^(\e(\[|O)(D|0D))|\Q$termcap->{_kl}\E/)
 				{
 					$left->();
 				}
-				when (/^(\[|O)(F|0F)/)
+				when (/^(\e(\[|O)(F|0F))|(\e\[4~)|(\e\[8~)/)
 				{
 					$end->();
 				}
-				when (/^(\[|O)(H|0H)/)
+				when (/^(\e(\[|O)(H|0H))|(\e\[1~)|(\e\[7~)|\Q$termcap->{_kh}\E/)
 				{
 					$home->();
 				}
-				when (/^\[(\d+)~/)
+				when (/^(\e\[2~)|\Q$termcap->{_kI}\E/)
 				{
-					given ($1)
-					{
-						when (1)
-						{
-							$home->();
-						}
-						when (2)
-						{
-							$ins_mode = not $ins_mode;
-						}
-						when (3)
-						{
-							$delete->();
-						}
-						when (4)
-						{
-							$end->();
-						}
-						when (5)
-						{
-							$pageup->();
-						}
-						when (6)
-						{
-							$pagedown->();
-						}
-						when (7)
-						{
-							$home->();
-						}
-						when (8)
-						{
-							$end->();
-						}
-						default
-						{
-							#$print->("\e$esc");
-						}
-					}
+					$ins_mode = not $ins_mode;
 				}
-				when (/^\[(\d+);(\d+)R/)
+				when (/^(\e\[3~)|\Q$termcap->{_kD}\E/)
+				{
+					$delete->();
+				}
+				when (/^(\e\[5~)|\Q$termcap->{_kP}\E/)
+				{
+					$pageup->();
+				}
+				when (/^(\e\[6~)|\Q$termcap->{_kN}\E/)
+				{
+					$pagedown->();
+				}
+				when (/^\e\[(\d+)~/)
+				{
+				}
+				when (/^\e\[(\d+);(\d+)R/)
 				{
 					$row = $1;
 					$col = $2;
 				}
 				default
 				{
-					#$print->("\e$esc");
+					#$print->("$esc");
 				}
 			}
 			$esc = undef;
