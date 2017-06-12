@@ -2,7 +2,7 @@ NAME
     Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 VERSION
-    version 1.09
+    version 1.10
 
 SYNOPSIS
             use Term::ReadLine::Tiny;
@@ -58,13 +58,13 @@ DESCRIPTION
 
     "^D": Aborts the operation. Returns "undef".
 
-Standard Methods and Functions
+STANDARD METHODS AND FUNCTIONS
   ReadLine()
-    returns the actual package that executes the commands. If this package
+    Returns the actual package that executes the commands. If this package
     is used, the value is "Term::ReadLine::Tiny".
 
   new([$appname[, IN[, OUT]]])
-    returns the handle for subsequent calls to following functions. Argument
+    Returns the handle for subsequent calls to following functions. Argument
     *appname* is the name of the application but not supported yet.
     Optionally can be followed by two arguments for IN and OUT filehandles.
     These arguments should be globs.
@@ -73,20 +73,20 @@ Standard Methods and Functions
     $ENV{PERL_RL} set to 'Tiny'.
 
   readline([$prompt[, $default]])
-    interactively gets an input line. Trailing newline is removed.
+    Interactively gets an input line. Trailing newline is removed.
 
-    Returns "undef" on "EOF".
+    Returns "undef" on "EOF" or error.
 
   addhistory($line1[, $line2[, ...]])
     AddHistory($line1[, $line2[, ...]])
 
-    adds lines to the history of input.
+    Adds lines to the history of input.
 
   IN()
-    returns the filehandle for input.
+    Returns the filehandle for input.
 
   OUT()
-    returns the filehandle for output.
+    Returns the filehandle for output.
 
   MinLine([$minline])
     minline([$minline])
@@ -98,14 +98,20 @@ Standard Methods and Functions
     Returns the old value.
 
   findConsole()
-    returns an array with two strings that give most appropriate names for
+    findconsole()
+
+    Returns an array with two strings that give most appropriate names for
     files for input and output using conventions "<$in", """out">.
 
   Attribs()
-    returns a reference to a hash which describes internal configuration of
+    attribs()
+
+    Returns a reference to a hash which describes internal configuration of
     the package. Not supported in this package.
 
   Features()
+    features()
+
     Returns a reference to a hash with keys being features present in
     current implementation. This features are present:
 
@@ -128,7 +134,7 @@ Standard Methods and Functions
 
     *   *utf8* is present, default "TRUE". See "utf8" method.
 
-Additional Methods and Functions
+ADDITIONAL METHODS AND FUNCTIONS
   newTTY([$IN[, $OUT]])
     takes two arguments which are input filehandle and output filehandle.
     Switches to use these filehandles.
@@ -146,6 +152,7 @@ Additional Methods and Functions
 
     rewrites all history by argument values.
 
+NON-STANDARD METHODS AND FUNCTIONS
   changehistory([$changehistory])
     If argument is specified, it allows to change history lines when
     argument value is true.

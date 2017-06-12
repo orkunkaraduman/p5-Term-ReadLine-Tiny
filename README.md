@@ -4,7 +4,7 @@ Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 # VERSION
 
-version 1.09
+version 1.10
 
 # SYNOPSIS
 
@@ -59,15 +59,15 @@ Also fully supports UTF-8, details in [UTF-8 section](https://metacpan.org/pod/T
 
 **`^D`:** Aborts the operation. Returns `undef`.
 
-# Standard Methods and Functions
+# STANDARD METHODS AND FUNCTIONS
 
 ## ReadLine()
 
-returns the actual package that executes the commands. If this package is used, the value is `Term::ReadLine::Tiny`.
+Returns the actual package that executes the commands. If this package is used, the value is `Term::ReadLine::Tiny`.
 
 ## new(\[$appname\[, IN\[, OUT\]\]\])
 
-returns the handle for subsequent calls to following functions.
+Returns the handle for subsequent calls to following functions.
 Argument _appname_ is the name of the application **but not supported yet**.
 Optionally can be followed by two arguments for IN and OUT filehandles. These arguments should be globs.
 
@@ -75,23 +75,23 @@ This routine may also get called via `Term::ReadLine->new()` if you have $ENV{PE
 
 ## readline(\[$prompt\[, $default\]\])
 
-interactively gets an input line. Trailing newline is removed.
+Interactively gets an input line. Trailing newline is removed.
 
-Returns `undef` on `EOF`.
+Returns `undef` on `EOF` or error.
 
 ## addhistory($line1\[, $line2\[, ...\]\])
 
 **AddHistory($line1\[, $line2\[, ...\]\])**
 
-adds lines to the history of input.
+Adds lines to the history of input.
 
 ## IN()
 
-returns the filehandle for input.
+Returns the filehandle for input.
 
 ## OUT()
 
-returns the filehandle for output.
+Returns the filehandle for output.
 
 ## MinLine(\[$minline\])
 
@@ -104,13 +104,19 @@ Returns the old value.
 
 ## findConsole()
 
-returns an array with two strings that give most appropriate names for files for input and output using conventions `"<$in"`, `"`out&quot;&gt;.
+**findconsole()**
+
+Returns an array with two strings that give most appropriate names for files for input and output using conventions `"<$in"`, `"`out&quot;&gt;.
 
 ## Attribs()
 
-returns a reference to a hash which describes internal configuration of the package. **Not supported in this package.**
+**attribs()**
+
+Returns a reference to a hash which describes internal configuration of the package. **Not supported in this package.**
 
 ## Features()
+
+**features()**
 
 Returns a reference to a hash with keys being features present in current implementation.
 This features are present:
@@ -124,7 +130,7 @@ This features are present:
 - _changehistory_ is present, default `TRUE`. See `changehistory` method.
 - _utf8_ is present, default `TRUE`. See `utf8` method.
 
-# Additional Methods and Functions
+# ADDITIONAL METHODS AND FUNCTIONS
 
 ## newTTY(\[$IN\[, $OUT\]\])
 
@@ -145,6 +151,8 @@ Returns copy of the history in Array.
 **SetHistory($line1\[, $line2\[, ...\]\])**
 
 rewrites all history by argument values.
+
+# NON-STANDARD METHODS AND FUNCTIONS
 
 ## changehistory(\[$changehistory\])
 
