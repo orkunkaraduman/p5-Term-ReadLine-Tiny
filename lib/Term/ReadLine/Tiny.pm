@@ -168,6 +168,7 @@ sub readline
 		$termcap = Term::Cap->Tgetent();
 	};
 	return unless defined($termcap);
+	my $term_autowrap = $termcap->{_am} && $termcap->{_xn} && 0;
 
 	local $\ = undef;
 
@@ -179,6 +180,7 @@ sub readline
 	my $history_index;
 	my $ins_mode = 0;
 	my ($row, $col);
+	my ($width, $height) = Term::ReadKey::GetTerminalSize($out);
 
 	my $autocomplete = $self->{autocomplete} || sub
 	{
@@ -192,6 +194,45 @@ sub readline
 		return;
 	};
 
+	my $print = sub {
+		my ($str) = @_;
+		if ($term_autowrap)
+		{
+			print $out $str;
+		} else
+		{
+			if ($str =~ /^\e/)
+			{
+				print $out $str;
+			} else
+			{
+				for (my $i = 0; $i < length($str); $i++)
+				{
+					my $c = substr($str, $i, 1);
+					unless ($c eq $termcap->{_bc})
+					{
+						print $out $c;
+						unless ($col++ % $width)
+						{
+							print $out "\n";
+							$row++ if $row < $height;
+							$col = 1;
+						}
+					} else
+					{
+						if ($col > 1)
+						{
+							print $out $c;
+							$col--;
+						} else
+						{
+							$termcap->Tgoto('cm', ($col = $width) - 1, --$row - 1, $out);
+						}
+					}
+				}
+			}
+		}
+	};
 	my $write = sub {
 		my ($text, $ins) = @_;
 		my $s;
@@ -204,7 +245,7 @@ sub readline
 			$s = encode_controlchar($c);
 			unless ($ins)
 			{
-				print $out $s;
+				$print->($s);
 				push @line, $s;
 				$line .= $c;
 			} else
@@ -218,31 +259,27 @@ sub readline
 		unless ($ins)
 		{
 			$s = join("", @a);
-			print $out $s;
-			print $out $termcap->{_bc} x length($s);
+			$print->($s);
+			$print->($termcap->{_bc} x length($s));
 		} else
 		{
 			$s = join("", @a);
-			print $out $s;
-			print $out $termcap->{_bc} x (length($s) - length(join("", @a[0..length($text)-1])));
+			$print->($s);
+			$print->($termcap->{_bc} x (length($s) - length(join("", @a[0..length($text)-1]))));
 		}
 		push @line, @a;
 		$line .= $a;
-		if ($index >= length($line))
+		if ($index >= length($line) and $term_autowrap)
 		{
-			print $out " ";
-			print $out $termcap->{_bc};
-			print $out $termcap->{_cd};
+			$print->(" ");
+			$print->("\e[D");
+			$print->($termcap->{_cd});
 		}
-	};
-	my $print = sub {
-		my ($text) = @_;
-		$write->($text, $ins_mode);
 	};
 	my $set = sub {
 		my ($text) = @_;
-		print $out $termcap->{_bc} x length(join("", @line[0..$index-1]));
-		print $out $termcap->{_cd};
+		$print->($termcap->{_bc} x length(join("", @line[0..$index-1])));
+		$print->($termcap->{_cd});
 		@line = ();
 		$line = "";
 		$index = 0;
@@ -253,11 +290,11 @@ sub readline
 		my @a = @line[$index..$#line];
 		my $a = substr($line, $index);
 		$index--;
-		print $out $termcap->{_bc} x length($line[$index]);
+		$print->($termcap->{_bc} x length($line[$index]));
 		@line = @line[0..$index-1];
 		$line = substr($line, 0, $index);
 		$write->($a);
-		print $out $termcap->{_bc} x length(join("", @a));
+		$print->($termcap->{_bc} x length(join("", @a)));
 		$index -= scalar(@a);
 	};
 	my $delete = sub {
@@ -266,11 +303,11 @@ sub readline
 		@line = @line[0..$index-1];
 		$line = substr($line, 0, $index);
 		$write->($a);
-		print $out $termcap->{_bc} x length(join("", @a));
+		$print->($termcap->{_bc} x length(join("", @a)));
 		$index -= scalar(@a);
 	};
 	my $home = sub {
-		print $out $termcap->{_bc} x length(join("", @line[0..$index-1]));
+		$print->($termcap->{_bc} x length(join("", @line[0..$index-1])));
 		$index = 0;
 	};
 	my $end = sub {
@@ -282,22 +319,17 @@ sub readline
 	};
 	my $left = sub {
 		return if $index <= 0;
-		print $out $termcap->{_bc} x length($line[$index-1]);
+		$print->($termcap->{_bc} x length($line[$index-1]));
 		$index--;
 	};
 	my $right = sub {
 		return if $index >= length($line);
-		print $out $line[$index];
+		$print->($line[$index]);
 		$index++;
-		if ($index >= length($line))
+		unless ($index >= length($line))
 		{
-			#print $out " ";
-			#print $out $termcap->{_bc};
-			#print $out $termcap->{_cd};
-		} else
-		{
-			print $out $line[$index];
-			print $out $termcap->{_bc} x length($line[$index]);
+			$print->($line[$index]);
+			$print->($termcap->{_bc} x length($line[$index]));
 		}
 	};
 	my $up = sub {
@@ -325,10 +357,12 @@ sub readline
 		$set->($history->[$history_index]);
 	};
 
-	print $prompt;
-	$set->($default);
+	print $out $prompt;
+	#$set->($default);
 	push @$history, $line;
 	$history_index = $#$history;
+
+	print $out "\e[6n";
 
 	my $result = undef;
 	my ($char, $esc) = ("", undef);
@@ -362,7 +396,7 @@ sub readline
 				}
 				when (/\n|\r/)
 				{
-					print $out $char;
+					$print->($char);
 					$history->[$#$history] = $line;
 					pop @$history unless defined($minline) and length($line) >= $minline;
 					$result = $line;
@@ -374,11 +408,11 @@ sub readline
 				}
 				when (/[\x00-\x1F]|\x7F/)
 				{
-					$print->($char);
+					$write->($char, $ins_mode);
 				}
 				default
 				{
-					$print->($char);
+					$write->($char, $ins_mode);
 				}
 			}
 			next;
@@ -438,7 +472,7 @@ sub readline
 				}
 				default
 				{
-					#$print->("$esc");
+					#$write->($char, $ins_mode);
 				}
 			}
 			$esc = undef;
