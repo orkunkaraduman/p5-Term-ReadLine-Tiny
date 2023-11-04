@@ -5,7 +5,7 @@ Term::ReadLine::Tiny - Tiny implementation of ReadLine
 
 =head1 VERSION
 
-version 1.10
+version 1.11
 
 =head1 SYNOPSIS
 
@@ -391,7 +391,7 @@ sub readline
 				}
 				when (/\t/)	# ^I
 				{
-					my $newline = $autocomplete->($self, $line, $history_index);
+					my $newline = $autocomplete->($self, $line, $history_index, $index);
 					$set->($newline) if defined $newline;
 				}
 				when (/\n|\r/)
@@ -878,10 +878,11 @@ sub encode_controlchar
 Sets a coderef to be used to autocompletion. If C<< $coderef >> is undef,
 will restore default behaviour.
 
-The coderef will be called like C<< $coderef->($term, $line, $ix) >>,
-where C<< $line >> is the existing line, and C<< $ix >> is the current
-location in the history. It should return the completed line, or undef
-if completion fails.
+The coderef will be called like C<< $coderef->($term, $line, $history_index, $line_position) >>,
+where C<< $line >> is the existing line, C<< $history_index >> is the current
+location in the history, and C<< $line_position >> is the position if the cursor.
+
+It should return the completed line, or undef if completion fails.
 
 =cut
 sub autocomplete
